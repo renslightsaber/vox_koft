@@ -215,6 +215,7 @@ def derive(cfg: dict, exp_path: Optional[Path]) -> dict:
             "val_jsonl": under(data_root, data.get("val_jsonl")),
             "val_unseen_jsonl": under(data_root, data.get("val_unseen_jsonl")),
             "val_unseen_pool_jsonl": under(data_root, data.get("val_unseen_pool_jsonl")),
+            "val_xref_jsonl": under(data_root, data.get("val_xref_jsonl")),
             "ref_pool_jsonl": under(data_root, (data.get("ref") or {}).get("pool_jsonl")),
             "emotion_map": str(resolve(em)) if em else None,
             "extra_sources": [{**e, "train_jsonl": under(data_root, e.get("train_jsonl"))}
@@ -346,7 +347,7 @@ def validate(cfg: dict, check_files: bool = True) -> None:
     if not cfg.get("hardware", {}).get("expected_num_processes"):
         errs.append("hardware.expected_num_processes 가 비어 있습니다 (configs/hardware/*.yaml)")
     if check_files and cfg["_run"].get("experiment"):
-        for k in ("val_unseen_jsonl", "val_unseen_pool_jsonl", "ref_pool_jsonl"):      # 선택 항목: 지정했으면 있어야 함
+        for k in ("val_unseen_jsonl", "val_unseen_pool_jsonl", "val_xref_jsonl", "ref_pool_jsonl"):      # 선택 항목: 지정했으면 있어야 함
             if d.get(k) and not Path(d[k]).exists():
                 errs.append(f"{k} 가 없습니다: {d[k]}")
         for k in ("train_jsonl", "val_jsonl", "init_model_dir"):

@@ -236,6 +236,29 @@ def test_dataset_instruct_and_ref_rules(toy):
     assert all(not ds0.plan(i, 0)["text"].startswith("(") and ds0.plan(i, 0)["ref"] is None for i in range(len(ds0)))
 
 
+def test_fixed_ref_row_always_used_and_old_rows_unchanged(toy):
+    """고정 ref 행(A7NX 류 · 2026-11-06): ref_audio 를 항상 씀(비율 · 풀 무시) · 길이도 그 ref · 난수 키 utt_x. 없는 행은 이전과 같음."""
+    rows, pool, imap = toy
+    old = _ds(toy, ref_ratio=0.5, instruct_ratio=0.5)
+    before = [(old.plan(i, 2)["text"], (old.plan(i, 2)["ref"] or {}).get("utt"), old.lengths[i]) for i in range(len(old))]
+    src = rows[9]                                                                     # s2(풀 없음)의 다른 칸 녹음을 ref 로
+    fx = [{**rows[8], "utt_x": f"{rows[8]['utt']}__x{k}", "ref_utt": src["utt"], "ref_audio": src["audio"],
+           "ref_duration": src["duration"], "ref_kind": "A"} for k in range(2)]
+    ds = VoxDataset(rows + fx, _tok, imap, 0.5, 0.0, build_pool(pool, 0.5, 10.0), 1986, 1024)   # ref_ratio 0 이어도
+    for i in (len(rows), len(rows) + 1):
+        for e in range(5):
+            assert ds.plan(i, e)["ref"]["utt"] == src["utt"]
+        assert ds.lengths[i] == ds.lengths[8] + n_patches(int(src["duration"] * 16000)) + 2
+        it = ds[(i, 0)]
+        assert it["ref"] is not None and len(it["ref"]) == int(src["duration"] * 16000) and it["utt"].endswith(f"__x{i - len(rows)}")
+    assert ds.n_no_pool == 0
+    # 같은 정답 · 다른 utt_x → 지시문 난수가 따로(40 epoch 중 한 번은 다름)
+    assert any(ds.plan(len(rows), e)["text"] != ds.plan(len(rows) + 1, e)["text"] for e in range(40))
+    # 고정 ref 행이 섞여도 기존 행의 입력 · 길이는 그대로
+    again = VoxDataset(rows + fx, _tok, imap, 0.5, 0.5, build_pool(pool, 0.5, 10.0), 1986, 1024)
+    assert [(again.plan(i, 2)["text"], (again.plan(i, 2)["ref"] or {}).get("utt"), again.lengths[i]) for i in range(len(rows))] == before
+
+
 def test_dataset_plan_is_deterministic_and_epoch_dependent(toy):
     a, b = _ds(toy, ref_ratio=0.5, instruct_ratio=0.5), _ds(toy, ref_ratio=0.5, instruct_ratio=0.5)
     pa = [(a.plan(i, 3)["text"], (a.plan(i, 3)["ref"] or {}).get("utt")) for i in range(len(a))]

@@ -108,6 +108,8 @@ class VoxSFTTrainer(BaseTrainer):
         val = mk(d["val_jsonl"], d["ref_pool_jsonl"], "val", strict=False)        # 평가 세트: drop_only 비율이 안 맞으면 경고만
         if d.get("val_unseen_jsonl"):
             self.ds_val_unseen = mk(d["val_unseen_jsonl"], d["val_unseen_pool_jsonl"], "val_unseen", strict=False)
+        if d.get("val_xref_jsonl"):                                                # 고정 ref(감정 ref) val → TB val_xref/*
+            self.ds_val_extra = {"val_xref": mk(d["val_xref_jsonl"], None, "val_xref", strict=False)}
         if self.acc.is_main_process:
             for ds_ in (train, val, getattr(self, "ds_val_unseen", None)):
                 if ds_ is not None and ds_.drop_warning:
@@ -242,4 +244,11 @@ class VoxSFTTrainer(BaseTrainer):
         for i in range(min(3, len(ds))):
             p = ds.plan(i, 0)
             lines.append(f"{ds.rows[i]['utt']} | {ds.rows[i]['emotion']} | ref={p['ref']['utt'] if p['ref'] else '-'} | {p['text']}")
+        fx = [r for r in ds.rows if r.get("ref_audio")]
+        if fx:                                                                   # 고정 ref(A7NX 류) 요약
+            import collections
+            kind = collections.Counter(r.get("ref_kind", "?") for r in fx)
+            durs = sorted(float(r["ref_duration"]) for r in fx)
+            lines.append(f"고정 ref {len(fx)}/{len(ds.rows)}행 · 종류 " + " · ".join(f"{k} {100 * v / len(fx):.1f}%" for k, v in sorted(kind.items()))
+                         + f" · 길이 중앙 {durs[len(durs) // 2]:.1f}s · 최대 {durs[-1]:.1f}s")
         return lines

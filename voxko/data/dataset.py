@@ -14,6 +14,8 @@
     drop_only: [Neutrality] 면 **전체의 (1 − instruct_ratio)** 만큼을 그 감정 문장에서만 뺀다
     → 그 감정 문장의 지시문 없앨 확률 = (1 − ratio) × 전체 문장 수 / 그 감정 문장 수 · 다른 감정 문장은 항상 지시문.
     → DataLoader worker 수 · GPU 수 · resume 과 무관하게 같은 epoch 의 같은 문장은 같은 입력. val(epoch 없음)은 epoch 0 고정.
+고정 ref(2026-11-06 · A7NX · A7NX3 "다른 칸 ref"): 행에 ref_audio 가 있으면 그 ref 를 **항상** 씀(ref_ratio · 후보 풀 무시) ·
+    길이 계산도 그 ref 길이(ref_duration) · 난수 키는 utt_x(같은 정답이 여러 행일 때 구분) — 없으면 utt. 행에 없으면 이전과 완전히 같음.
 길이 거르기: 근사 길이(text + target patch + 그 화자 ref 최대 patch + 4)가 max_seq_len 을 넘으면 제외(n_dropped).
     공식 packer 는 8192 를 넘으면 말없이 잘라 stop 라벨이 사라진다.
 """
@@ -106,12 +108,15 @@ class VoxDataset(Dataset):
             instr = ([as_ids(f"({p}){text}") for p in self.instruct_map[r["emotion"]]]
                      if instruct_ratio > 0 else [plain])
             cands = self._candidates(r)
-            ref_len = (ref_max.get(r["speaker"], 0) + 2) if (self.ref_ratio > 0 and cands) else 0
+            if r.get("ref_audio"):                                # 고정 ref — 항상 붙음
+                ref_len = approx_patches(float(r["ref_duration"])) + 2
+            else:
+                ref_len = (ref_max.get(r["speaker"], 0) + 2) if (self.ref_ratio > 0 and cands) else 0
             L = max(len(plain), *(len(x) for x in instr)) + approx_patches(float(r["duration"])) + ref_len + 2
             if L > max_seq_len:
                 self.n_dropped += 1
                 continue
-            self.n_no_pool += int(self.ref_ratio > 0 and not cands)
+            self.n_no_pool += int(self.ref_ratio > 0 and not cands and not r.get("ref_audio"))
             self.rows.append({**r, "text": text})
             self.ids_plain.append(plain)
             self.ids_instr.append(instr)
@@ -155,12 +160,15 @@ class VoxDataset(Dataset):
     def plan(self, i: int, epoch: int = 0) -> dict:
         """문장 i 의 이번 epoch 입력 구성(지시문 여부 · ref) — 결정적."""
         r = self.rows[i]
-        rng = random.Random(f"{self.seed}|{epoch}|{r['utt']}")
+        rng = random.Random(f"{self.seed}|{epoch}|{r.get('utt_x', r['utt'])}")
         use_instr = rng.random() < self.p_keep(i)            # ① (v1 과 같은 첫 난수)
         ref = None
-        cands = self._candidates(r)
-        if cands and rng.random() < self.ref_ratio:           # ② (v1 과 같은 순서)
-            ref = cands[rng.randrange(len(cands))]
+        if r.get("ref_audio"):                                # 고정 ref(행에 지정) — 비율 · 풀 무시, 난수 안 씀
+            ref = {"utt": r["ref_utt"], "audio": r["ref_audio"], "duration": float(r["ref_duration"])}
+        else:
+            cands = self._candidates(r)
+            if cands and rng.random() < self.ref_ratio:       # ② (v1 과 같은 순서)
+                ref = cands[rng.randrange(len(cands))]
         phrases = self.instruct_map.get(r["emotion"], [""])
         k = rng.randrange(len(phrases)) if (use_instr and len(phrases) > 1) else 0   # ③ 맨 뒤 — v1(문구 1개)은 꺼내지 않음
         text = f"({phrases[k]}){r['text']}" if use_instr else r["text"]
@@ -180,7 +188,7 @@ class VoxDataset(Dataset):
         ref = self._load(p["ref"]["audio"]) if p["ref"] else None
         ids = self.ids_instr[i][p["phrase"] if len(self.ids_instr[i]) > 1 else 0] if p["use_instr"] else self.ids_plain[i]
         return {"text_ids": ids, "audio": wav, "ref": ref,
-                "utt": r["utt"], "ref_utt": p["ref"]["utt"] if p["ref"] else None}
+                "utt": r.get("utt_x", r["utt"]), "ref_utt": p["ref"]["utt"] if p["ref"] else None}
 
     @staticmethod
     def collate(batch: List[dict]) -> dict:

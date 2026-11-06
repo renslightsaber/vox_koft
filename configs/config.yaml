@@ -13,6 +13,7 @@ data:
   val_jsonl: null                     # ← 학습 화자 val (같은 표본 · GPU 수 무관)
   val_unseen_jsonl: null              # ← (선택) 처음 보는 화자 val → TB val_unseen/*
   val_unseen_pool_jsonl: null         # ← val_unseen 화자의 무감정 ref 풀(val_unseen_jsonl 과 함께)
+  val_xref_jsonl: null                # ← (선택) 고정 ref 행(ref_audio)으로 된 추가 val(예: A7NX/val_xref.jsonl · 감정 ref 판) → TB val_xref/*
   emotion:
     map_file: configs/emotion/a7n_vox_v1.yaml   # ← 감정 라벨 → 영어 지시문 표. 데이터에 표에 없는 감정이 있으면 학습 전 에러
     instruct_ratio: 1.0               # ← 지시문 "(…)" 을 붙이는 비율(0~1). 1.0 = 항상. 문장 · epoch 마다 결정적으로 정함
