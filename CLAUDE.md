@@ -19,7 +19,7 @@ vox_koft/
 ├── VoxCPM/                  # 🔒 OpenBMB/VoxCPM clone (커밋 cce58a5 · 2026-10-08) — editable 설치
 ├── ko-tts-text-normalizer/  # 한국어 정규화(import ko_tts_norm) — VoxCPM 내장 정규화는 중·영만이라 필수
 ├── requirements_112/        # env voxcpm 설치 스크립트 · 가이드 · verify_install.py · lock
-├── tools/                   # download_ckpts.py · pre_train_backup.py · post_train_backup.py(학습 뒤 백업 · curves) · eval_runs.py(D 재측정 일괄) · vspk.py(가상 화자 일관성 · REF 음향) · d_eval_tables.py(best 5 · 상위 5 · 성공 기준) · tb_group.py(TB 그룹 · --where)
+├── tools/                   # download_ckpts.py · pre_train_backup.py · post_train_backup.py(학습 뒤 백업 · curves) · eval_runs.py(D 재측정 일괄) · vspk.py(가상 화자 일관성 · REF 음향) · bestofn.py(여러 번 만들어 고르기 · 문턱 · 노브) · d_eval_tables.py(best 5 · 상위 5 · 성공 기준) · tb_group.py(TB 그룹 · --where)
 ├── .claude/agents/          # vox-* 서브 에이전트 10종 — docs/guides/agents_creation_guide.md
 ├── configs/                 # config.yaml(스키마 · 모르는 키 에러) · hardware/ · accelerate/ · emotion/(지시문 표) · experiments/{sft,lora}/
 ├── voxko/                   # 우리 패키지(pip install -e . --no-deps)
@@ -57,7 +57,7 @@ vox_koft/
   - 원본 기준선(감정 6칸): 목표 1위 67% · e2v 감정 47% · CER 5.7% — 중립 칸을 더한 7칸 "전체"는 71% · 48% · 4.9%(중립이 쉬워서 좋아 보임)
   - 정본 [docs/plan/20261105_success_criteria_and_next_runs.md](docs/plan/20261105_success_criteria_and_next_runs.md)
 - 학습 형식 = reference 만(prompt 이어 말하기 없음) · ref 비율(1·2번 0.7 · 3·4번 0.5)의 나머지 = ref 없음.
-- 현재(11/06 10:15): 본 학습 **4개 완료** · D 재측정 18개 모델 + **중립 칸 추가(7칸)** · **가상 화자 일관성**(`tools/vspk.py` — 세트 안 일관성 FT·LoRA 96~97% ≈ 진짜 녹음 98%) · 중립 시범 생성 640개 · **청음 판정 대기** — [결과](docs/reports/20261106_A7N_4runs_results.md) · [중립 · 가상 화자](docs/reports/20261106_neutral_cell_virtual_speaker.md) · 최신 `_handoff/`.
+- 현재(11/06 16:45): 🏃 **"다른 칸 ref" LoRA 2개**(A7NX 3,000 && A7NX3 9,000 step · 행에 고정 `ref_audio` → dataset 이 항상 그 ref · [계획](docs/plan/20261106_xref_lora_runs.md)) **학습 중**(16:34 시작 · GPU 2,3 · 끝 약 19:05) · 그 전(15:25): 본 학습 **4개 완료** · D 재측정 18개 모델 + **중립 칸 추가(7칸)** · **가상 화자 일관성**(`tools/vspk.py` — 세트 안 일관성 FT·LoRA 96~97% ≈ 진짜 녹음 98%) · 중립 시범 생성 640개 · **best-of-N**(`tools/bestofn.py` — 5개 중 생성 중립에 가까운 것 고르기 → 센 감정 칸 유사도 0.66 → 0.70 · prompt 모드는 지시문을 읽음) · **청음 판정 대기** — [결과](docs/reports/20261106_A7N_4runs_results.md) · [중립 · 가상 화자](docs/reports/20261106_neutral_cell_virtual_speaker.md) · 최신 `_handoff/`.
 - LoRA 는 **V2 LoRAConfig**(공식 추론 스크립트는 V1 import) · sm_120 에서 nano-vllm LoRA 추론 금지(이슈 #326).
 
 ## 5. 서브 에이전트 (`.claude/agents/vox-*.md` · 안내 [docs/guides/agents_creation_guide.md](docs/guides/agents_creation_guide.md))
