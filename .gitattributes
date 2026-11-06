@@ -1,0 +1,5 @@
+# 노트북은 GitHub · GitLab 에 **출력을 지운 사본**만 올린다(서버의 .ipynb 는 출력 그대로).
+# 필터 등록(clone 한 뒤 한 번, 저장소 폴더에서):
+#   git config filter.nbstrip.clean "jupyter nbconvert --ClearOutputPreprocessor.enabled=True --to notebook --stdin --stdout --log-level=ERROR"
+#   git config filter.nbstrip.smudge cat
+*.ipynb filter=nbstrip

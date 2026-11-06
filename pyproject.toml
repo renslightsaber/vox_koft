@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voxko"
+version = "0.1.0"
+description = "VoxCPM2 한국어 감정 Fine-tune (전체 FT · LoRA) — vox_koft"
+requires-python = ">=3.10"
+# 의존성의 정본은 requirements_112/ 다. 여기에 적으면 `pip install -e .` 가 torch(cu128) 핀을 다시 풀 수 있으므로
+# 비워 둔다. 설치: pip install -e . --no-deps
+dependencies = []
+
+[tool.setuptools]
+# flat layout 자동 탐색은 VoxCPM/ · configs/ 등을 긁어 "Multiple top-level packages" 오류를 낸다 → 명시
+packages = ["voxko", "voxko.common", "voxko.data", "voxko.sft", "voxko.lora", "voxko.engine", "voxko.eval"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["gpu: GPU 와 사전학습 체크포인트가 필요한 테스트"]

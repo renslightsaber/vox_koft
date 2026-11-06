@@ -1,0 +1,6 @@
+[submodule "VoxCPM"]
+	path = VoxCPM
+	url = https://github.com/OpenBMB/VoxCPM.git
+[submodule "ko-tts-text-normalizer"]
+	path = ko-tts-text-normalizer
+	url = ../ko-tts-text-normalizer.git

@@ -1,0 +1,35 @@
+# ============================================================================
+# .gitignore — vox_koft
+# 내 코드·설정·문서·기록만 커밋한다. 대용량(체크포인트·데이터·합성음·TB)은 원래 저장소 밖에 있다
+# (~/workspaces/outputs/vox_koft · preprocessed/vox_koft · tmp_listen/vox_koft).
+# VoxCPM/ · ko-tts-text-normalizer/ 는 git submodule 로 관리한다(.gitmodules).
+# ============================================================================
+
+# ── 파이썬·도구 캐시 ─────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ── 로그 (서버에만 보관) ─────────────────────────────────────────────────────
+*.log
+
+# ── 혹시 모를 대용량 산출물 (실수로 저장소 안에 생겨도 커밋되지 않게) ───────
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.wav
+*.flac
+*.npz
+*.npy
+*.parquet
+/runs/
+/runs_grouped/
+
+# ── 학습 당시 코드 스냅샷(코드는 git 기록이 대신함) ─────────────────────────
+exp_reports/**/_code_snapshot_*.tar.gz
+
+# ── 개인 설정 ────────────────────────────────────────────────────────────────
+.claude/settings.local.json
