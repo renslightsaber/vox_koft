@@ -15,6 +15,12 @@
 
 </div>
 
+> **English summary** — Korean emotional fine-tuning of **VoxCPM2** (2B, 48 kHz) with both full fine-tuning and LoRA.
+> Input: `"(English emotion description)Korean sentence"` + a neutral reference clip of an unseen speaker → speech in that speaker's voice with the instructed emotion.
+> Our trainer wraps the official model/packer/LoRA with exact resume, atomic exports, GPU-count-independent validation, and grouped TensorBoard.
+> Evaluation ("D re-measurement") uses 16 unseen speakers × 7 emotion cells with WavLM/ERes2Net speaker ranking, emotion2vec/arousal, Whisper CER, SQUIM, and a virtual-speaker consistency check.
+> Main use: generating emotional data in new voices for the sister project [q3tts_koft](https://github.com/renslightsaber/q3tts_koft). The upstream `VoxCPM/` is never modified. Documentation is in Korean.
+
 ---
 
 ## ✨ 이 프로젝트는
@@ -81,7 +87,7 @@ flowchart LR
 
 ```bash
 git clone --recursive https://github.com/renslightsaber/vox_koft.git
-# 사내 GitLab(SSH): git clone --recursive git@gitlab.tutorusresearch.com:renslightsaber/vox-koft.git
+# 사내 GitLab 미러도 있습니다(주소는 팀 안내 참고)
 cd vox_koft
 # 이미 받았다면: git submodule update --init --recursive
 ```
