@@ -1,0 +1,6 @@
+e90c17a4ca1d1c2a1ee77bcf3b568b4f  config__config.yaml  ← /DATA/home/rohoon/workspaces/vox_koft/configs/config.yaml
+131929ca2bb09810d2db70a62c2598e3  hardware__rtxpro6000_2gpu.yaml  ← /DATA/home/rohoon/workspaces/vox_koft/configs/hardware/rtxpro6000_2gpu.yaml
+dd8d893e223d7317fa826aebf13aee88  experiment__A7NX_xref_LoRA_01_r32.yaml  ← /DATA/home/rohoon/workspaces/vox_koft/configs/experiments/lora/A7NX_xref_LoRA_01_r32.yaml
+3ff08ae620c6915d30d71e32151c8f5d  accelerate__rtxpro6000_2gpu_b.yaml  ← /DATA/home/rohoon/workspaces/vox_koft/configs/accelerate/rtxpro6000_2gpu_b.yaml
+76c30f902c342e62f25f49dae2ae90c1  emotion_map__a7n_vox_v1.yaml  ← /DATA/home/rohoon/workspaces/vox_koft/configs/emotion/a7n_vox_v1.yaml
+e017cf685fa86390b628648653dd00bc  merged.yaml
