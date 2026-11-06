@@ -1,0 +1,30 @@
+# configs/accelerate/rtxpro6000_4gpu.yaml — accelerate launch 설정 (RTX PRO 6000 × 4, DDP, bf16)
+# ─────────────────────────────────────────────────────────────────────────────
+# `accelerate launch --config_file` 전용(학습 하이퍼파라미터는 configs/hardware/).
+#
+#   accelerate launch --config_file configs/accelerate/rtxpro6000_4gpu.yaml \
+#     <진입점>.py --hardware configs/hardware/rtxpro6000_4gpu.yaml --experiment configs/experiments/sft/<ID>.yaml
+#
+# · num_processes(4) == 실제로 쓰는 GPU 수. 다르면 NCCL init 실패 또는 DDP 가 조용히 꺼진다.
+# · gpu_ids: all
+# · 다른 학습과 동시에 돌리면 --main_process_port 를 분리(기본 29500).
+# · 포트 29600(q3tts_koft 기본 29500 · 2gpu 29510/29520 과 겹치지 않게)
+# ─────────────────────────────────────────────────────────────────────────────
+compute_environment: LOCAL_MACHINE
+debug: false
+distributed_type: MULTI_GPU
+downcast_bf16: 'no'
+enable_cpu_affinity: false
+gpu_ids: all
+main_process_port: 29600
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 4
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false

@@ -1,0 +1,27 @@
+# configs/accelerate/rtxpro6000_1gpu.yaml — accelerate launch 설정 (RTX PRO 6000 × 1, bf16)
+# ─────────────────────────────────────────────────────────────────────────────
+# `accelerate launch --config_file` 전용이다(학습 하이퍼파라미터가 아님 — 그쪽은 configs/hardware/).
+# 대화형 `accelerate config`(~/.cache/huggingface/accelerate/) 대신 이 파일을 프로젝트에 두고 쓴다.
+#
+#   CUDA_VISIBLE_DEVICES=0 accelerate launch --config_file configs/accelerate/rtxpro6000_1gpu.yaml \
+#     <진입점>.py --hardware configs/hardware/rtxpro6000_1gpu.yaml --experiment configs/experiments/sft/<ID>.yaml
+#
+# 다른 학습과 동시에 돌리면 --main_process_port 를 분리할 것(기본 29500).
+# ─────────────────────────────────────────────────────────────────────────────
+compute_environment: LOCAL_MACHINE
+debug: false
+distributed_type: 'NO'
+downcast_bf16: 'no'
+enable_cpu_affinity: false
+gpu_ids: all   # 🔴 'all' 이어야 run.sh --gpu N 의 CUDA_VISIBLE_DEVICES 를 따름. '0' 이면 accelerate 가 덮어써 항상 GPU 0번(2026-10-24 버그)
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 1
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false
