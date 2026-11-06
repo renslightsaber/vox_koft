@@ -1,0 +1,12 @@
+c4cdae89e845cbdfe4f6c5f2793a8f56  analysis.json
+3ff08ae620c6915d30d71e32151c8f5d  configs/accelerate__rtxpro6000_2gpu_b.yaml
+fd8955f29d58ea8443fd68bd69b9ce66  configs/cmd.txt
+863dfdda918aa15cfede5dfb635d2d6e  configs/config__config.yaml
+a3d51fbe3bbeb7068335beeb333ff0f5  configs/emotion_map__a7n_vox_v2.yaml
+35167d3d624ba78566a63d6e3d75ff2b  configs/experiment__A7N_ref_FT_02_iv2.yaml
+131929ca2bb09810d2db70a62c2598e3  configs/hardware__rtxpro6000_2gpu.yaml
+a30651933a2699bdfa2731584886233e  configs/merged.yaml
+a864327da1c75af5b8b7a4322cdeb152  logs/A7N_ref_FT_02_iv2_20261105_165639.log
+1cdb24eeacdbefa80b6d4416461ea108  logs/A7N_ref_FT_02_iv2_20261105_165639_readable.log
+6af23549c8710fb915d66500484073a6  tb_scalars.csv
+ef9ea05887c4aa0b1236cea8f095f071  val_table.csv

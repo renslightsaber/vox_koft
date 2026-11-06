@@ -1,0 +1,17 @@
+# cmd.txt — run A7N_ref_FT_02_iv2 (fresh)
+time        : 2026-11-05 16:57:18 UTC
+host        : rtxnode0  user=rohoon
+conda env   : voxcpm
+world size  : 2  CUDA_VISIBLE_DEVICES=2,3
+seed        : 1986
+alloc conf  : PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+gpu         : NVIDIA RTX PRO 6000 Blackwell Server Edition
+physical gpu: [2, 3]  (nvidia-smi 번호)
+versions    : torch 2.8.0+cu128 · transformers 4.57.3 · accelerate 1.12.0
+train_jsonl : /DATA/home/rohoon/workspaces/preprocessed/vox_koft/A7N/train.jsonl  (rows=105938, md5=8b8c85ca2a52)
+val_jsonl   : /DATA/home/rohoon/workspaces/preprocessed/vox_koft/A7N/val.jsonl  (rows=212, md5=0d2f939f1096)
+emotion map : /DATA/home/rohoon/workspaces/vox_koft/configs/emotion/a7n_vox_v2.yaml  (md5=a3d51fbe3bbe)
+init_model  : /DATA/home/rohoon/workspaces/ourckpts/voxcpm/VoxCPM2
+launcher    : scripts/run.sh train sft --exp configs/experiments/sft/A7N_ref_FT_02_iv2.yaml --hw rtxpro6000_2gpu --accel 2gpu_b 
+accel file  : /DATA/home/rohoon/workspaces/vox_koft/configs/accelerate/rtxpro6000_2gpu_b.yaml
+argv        : /DATA/home/rohoon/workspaces/vox_koft/voxko/sft/train.py --exp configs/experiments/sft/A7N_ref_FT_02_iv2.yaml --hw rtxpro6000_2gpu

@@ -1,0 +1,86 @@
+# 이 run 이 실제로 쓴 최종 설정(config → hardware → experiment → overlay → --set 병합). 🔒 수정 금지
+model:
+  init_model: VoxCPM2
+data:
+  train_jsonl: A7N/train.jsonl
+  val_jsonl: A7N/val.jsonl
+  val_unseen_jsonl: A7N/val_unseen8/val.jsonl
+  val_unseen_pool_jsonl: A7N/val_unseen8/ref_pool.jsonl
+  emotion:
+    map_file: configs/emotion/a7n_vox_v1.yaml
+    instruct_ratio: 1.0
+    drop_only: null
+  ref:
+    pool_jsonl: A7N/ref_pool.jsonl
+    ratio: 0.7
+    pool: neutral
+    min_dur: 2.0
+    max_dur: 10.0
+  extra_sources: []
+  max_seq_len: 1024
+  batch_size: 8
+  max_tokens: null
+  bucket_mult: 50
+  num_workers: 4
+  val_num_workers: 2
+  pin_memory: true
+optim:
+  lr: 0.0001
+  weight_decay: 0.01
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1.0e-08
+  grad_clip: 1.0
+  scheduler: cosine_warmup
+  warmup_steps: 200
+train:
+  max_steps: 3000
+  smoke_steps: 3
+  grad_accum: 2
+  seed: 1986
+  log_every: 10
+  eval_every: 250
+  eval_max_batches: null
+  eval_seed: 1986
+  save_every: 250
+  keep_last: 12
+  resume:
+    enable: true
+    every: 500
+    keep: 1
+  lambdas:
+    diff: 1.0
+    stop: 1.0
+  early_traj_steps: []
+  ddp_find_unused: false
+lora:
+  enable: true
+  r: 32
+  alpha: 32
+  dropout: 0.0
+  enable_lm: true
+  enable_dit: true
+  enable_proj: false
+media:
+  enable: true
+  every: 500
+  num_samples: 2
+  seed: 1986
+  cfg_value: 2.0
+  inference_timesteps: 10
+  max_len: 1000
+export:
+  dtype: bfloat16
+logging:
+  tensorboard: true
+  run_name: A7N_ref_LoRA_01_r32
+precision:
+  mixed_precision: bf16
+hardware:
+  expected_num_processes: 2
+paths:
+  ckpt_root: /DATA/home/rohoon/workspaces/ourckpts/voxcpm
+  data_root: /DATA/home/rohoon/workspaces/preprocessed/vox_koft
+  save_root: /DATA/home/rohoon/workspaces/outputs/vox_koft/ckpt
+  tb_root: /DATA/home/rohoon/workspaces/outputs/vox_koft/runs

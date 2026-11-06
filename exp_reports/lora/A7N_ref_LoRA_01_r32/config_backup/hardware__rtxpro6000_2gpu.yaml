@@ -1,0 +1,18 @@
+# configs/hardware/rtxpro6000_2gpu.yaml — NVIDIA RTX PRO 6000 Blackwell (96GB, sm_120) × 2
+# ─────────────────────────────────────────────────────────────────────────────
+# **하드웨어 축**만 둔다(머신에 따라 달라지는 값). 실험 레시피 값은 configs/experiments/ 에.
+# 짝: configs/accelerate/rtxpro6000_2gpu.yaml  (accelerate launch 의 --config_file)
+# 병합 순서: configs/config.yaml → 이 파일 → configs/experiments/<계열>/<ID>.yaml → CLI
+# 🔴 학습 진입점은 --hardware 를 **필수 인자**로 받는다(조용한 기본값 금지 — q3tts_koft 와 같은 규칙).
+#
+# 유효 배치 = data.batch_size × train.grad_accum × GPU 수(2)
+# ⚠️ batch_size 는 아직 실측 전이다. 첫 실행은 smoke + torch.cuda.max_memory_allocated() 로 확인 후 확정.
+# ─────────────────────────────────────────────────────────────────────────────
+data:
+  batch_size: 8                 # GPU 1장당 (미실측 — smoke 로 확정)
+  num_workers: 4                # 프로세스당 DataLoader worker
+  pin_memory: true
+precision:
+  mixed_precision: bf16         # Blackwell bf16 지원. fp16 금지
+hardware:
+  expected_num_processes: 2     # configs/accelerate/ 의 num_processes 와 같아야 함(아니면 시작 전 중단)

@@ -1,0 +1,25 @@
+# configs/accelerate/rtxpro6000_2gpu_b.yaml — accelerate launch 설정 (RTX PRO 6000 × 2, GPU 2,3, DDP, bf16)
+# (vox_koft: q3tts_koft 판을 옮김. 2GPU 포트는 q3tts_koft 와 동시에 돌아도 겹치지 않게 29610/29620)
+# ─────────────────────────────────────────────────────────────────────────────
+# 2GPU 실험 두 개를 한 서버에서 **동시에** 돌리기 위해 a(GPU 0,1 · 포트 29610) / b(GPU 2,3 · 포트 29620)로 나눴다.
+# 짝: configs/hardware/rtxpro6000_2gpu.yaml (expected_num_processes 2)
+#   ./scripts/run.sh train sft --exp <yaml> --hw rtxpro6000_2gpu --accel 2gpu_b
+# ─────────────────────────────────────────────────────────────────────────────
+compute_environment: LOCAL_MACHINE
+debug: false
+distributed_type: MULTI_GPU
+downcast_bf16: 'no'
+enable_cpu_affinity: false
+gpu_ids: 2,3
+machine_rank: 0
+main_process_port: 29620
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 2
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false

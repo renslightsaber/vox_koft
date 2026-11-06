@@ -1,0 +1,32 @@
+# A7N_ref_LoRA_01_r32 — VoxCPM2 LoRA(r32) 첫 본 학습 (2026-11-05 사용자 확정 · 23:50 변경: GPU 2,3 에서 4개 연속 실행의 2번)
+#   목적: 무감정 ref + "(영어 감정 지시문)문장" 으로 A7N 7칸 감정을 지시문만으로 확실히 내게 한다(D안 증강 가능성).
+#   데이터: A7N(16kHz · 지시문 표 a7n_vox_v1 · 같은 화자 무감정 ref 70%) — python -m voxko.data.prepare a7n
+#   짝: A7N_ref_FT_01 (같은 데이터 · 같은 step · 전체 FT)
+#   batch: 가장 긴 배치(23초 문장 + 9~10초 ref) 실측 peak 54.3GB(bs8) → GPU 당 8 × accum 2 = 16문장/step (2026-11-05)
+#   실행(사용자 · byobu): ./scripts/run.sh train lora --exp configs/experiments/lora/A7N_ref_LoRA_01_r32.yaml --hw rtxpro6000_2gpu --accel 2gpu_b
+logging:
+  run_name: A7N_ref_LoRA_01_r32
+data:
+  train_jsonl: A7N/train.jsonl
+  val_jsonl: A7N/val.jsonl
+  val_unseen_jsonl: A7N/val_unseen8/val.jsonl
+  val_unseen_pool_jsonl: A7N/val_unseen8/ref_pool.jsonl
+  ref:
+    pool_jsonl: A7N/ref_pool.jsonl
+  batch_size: 8                     # hw yaml(8) 대신 — 방식마다 메모리가 달라 실험에 둠
+optim:
+  lr: 1.0e-4
+  warmup_steps: 200
+train:
+  max_steps: 3000
+  grad_accum: 2
+  eval_every: 250
+  save_every: 250
+  keep_last: 12
+  resume: {enable: true, every: 500, keep: 1}
+media:
+  every: 500
+lora:
+  enable: true
+  r: 32
+  alpha: 32

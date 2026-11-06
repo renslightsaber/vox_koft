@@ -1,0 +1,44 @@
+# configs/emotion/a7n_vox_v2.yaml — A7N 감정 7칸 → VoxCPM2 괄호 지시문 **여러 문구** (2026-11-05 23:50 KST 사용자 확정 · 웹 조사판)
+#
+# 근거(q3tts_koft 세션 웹 조사): 공식 사전학습 캡션은 "다양한 자유 문장" → 감정마다 문구 1개로 고정하지 않고 4개를 섞는다.
+# 문법: 공식 예시 "(slightly faster, cheerful tone)…" 처럼 쉼표로 이은 짧은 영어 묘사 · 괄호 안에 괄호 없음 ·
+#       감정 · 강도 · 속도 · 높이 · 세기만(성별 · 나이 같은 정체성 묘사는 넣지 않음 — cookbook: 클로닝 + 지시문은 감정 · 속도 · 전달 조절용).
+# ① = v1(a7n_vox_v1.yaml) 문구 그대로 — D 재측정은 모든 모델에 ① 을 준다(voxko.engine 은 목록이면 첫 문구).
+# 학습: 문장 · epoch 마다 4개 중 하나(Random(seed|epoch|utt) 의 마지막 난수 — voxko/data/dataset.py).
+# A = 감정을 누르는 쪽(low-key) · B = 드러내는 쪽(openly expressed). 이 파일은 고치지 말고 바꿀 때는 v3 를 새로.
+instruct:
+  Neutrality:
+    - "Calm, neutral tone, speaking plainly at a steady pace"
+    - "even and composed, normal pace, natural pitch"
+    - "matter-of-fact tone, steady rhythm, medium volume"
+    - "plain reading voice, relaxed and neutral"
+  Happy-A:
+    - "Quietly happy, warm and content, a gentle smile in the voice"
+    - "softly cheerful, relaxed pace, slightly brighter pitch"
+    - "pleased and warm, light upbeat tone, medium volume"
+    - "contented, mild joy, easy unhurried rhythm"
+  Happy-B:
+    - "Very happy and excited, bright, cheerful and openly joyful"
+    - "thrilled and bubbly, faster pace, raised pitch"
+    - "joyful and enthusiastic, lively tone, loud and expressive"
+    - "overjoyed, excited laughter in the voice, strong emphasis"
+  Sad-A:
+    - "Quietly sad, subdued and low, holding back sorrow"
+    - "melancholy, slow pace, lower pitch, soft volume"
+    - "downcast and wistful, restrained sadness, heavy delivery"
+    - "gloomy and tired, muted tone, slow and quiet"
+  Sad-B:
+    - "Deeply sad and tearful, grieving, voice trembling with sorrow"
+    - "heartbroken and sobbing, shaky voice, slow broken rhythm"
+    - "anguished and crying, low trembling pitch, breathy voice"
+    - "devastated and mournful, slow pace, choked with tears"
+  Angry-A:
+    - "Coldly irritated, restrained anger, firm and clipped"
+    - "annoyed and stern, tense controlled voice, short sharp phrasing"
+    - "displeased and cold, low firm tone, suppressed anger"
+    - "frustrated and curt, tight voice, slightly fast"
+  Angry-B:
+    - "Furious and shouting, strong anger, loud and harsh"
+    - "enraged and yelling, very loud, fast forceful delivery"
+    - "explosive anger, harsh rough voice, aggressive emphasis"
+    - "outraged and fierce, sharp loud outbursts, intense pace"

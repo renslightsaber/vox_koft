@@ -1,0 +1,30 @@
+# A7N100_ref_LoRA_00_smoke — 학습 인프라 검증용(LoRA r32) · 2026-11-05
+#   데이터: A7N_smoke100(화자 6명 · train 88 · val 12 · 16kHz) — python -m voxko.data.prepare a7n --limit 100
+#   용도: smoke · resume 동일성 · 2GPU 확인. 본 학습용이 아님.
+#   실행: ./scripts/run.sh train lora --exp configs/experiments/lora/A7N100_ref_LoRA_00_smoke.yaml --hw rtxpro6000_1gpu --gpu N --smoke
+logging:
+  run_name: A7N100_ref_LoRA_00_smoke
+data:
+  train_jsonl: A7N_smoke100/train.jsonl
+  val_jsonl: A7N_smoke100/val.jsonl
+  val_unseen_jsonl: A7N_smoke100/val_unseen8/val.jsonl
+  val_unseen_pool_jsonl: A7N_smoke100/val_unseen8/ref_pool.jsonl
+  ref:
+    pool_jsonl: A7N_smoke100/ref_pool.jsonl
+optim:
+  lr: 1.0e-4
+  warmup_steps: 2
+train:
+  max_steps: 6
+  grad_accum: 2
+  log_every: 1
+  eval_every: 2
+  save_every: 2
+  keep_last: 10
+  resume: {enable: true, every: 2, keep: 10}
+media:
+  every: 0
+lora:
+  enable: true
+  r: 32
+  alpha: 32

@@ -1,0 +1,38 @@
+# A7N_ref_LoRA_02_r32_iv2 — VoxCPM2 LoRA r32 **웹 조사판** (2026-11-05 23:50 KST 사용자 결정 · 4개 연속 실행의 4번)
+#   짝: A7N_ref_LoRA_01_r32 — 다른 점은 데이터 규칙 3가지뿐(나머지 lr · batch · step · 저장은 같음):
+#     ① 지시문 표 v2(감정마다 문구 4개를 섞음 · ① = v1 문구) ② 지시문 비율 0.9 — 빼는 10% 는 Neutrality 문장만
+#     ③ ref 비율 0.5(공식 권장 30~50%)
+#   근거: q3tts_koft 세션 웹 조사(공식 finetune/faq/cookbook · 이슈 #303 #308 #317 #257 · arXiv 2606.06928)
+#   batch: 가장 긴 배치(23초 문장 + 9~10초 ref) 실측 peak 54.3GB(bs8) → GPU 당 8 × accum 2 = 16문장/step (2026-11-05)
+#   실행(사용자 · byobu): ./scripts/run.sh train lora --exp configs/experiments/lora/A7N_ref_LoRA_02_r32_iv2.yaml --hw rtxpro6000_2gpu --accel 2gpu_b
+logging:
+  run_name: A7N_ref_LoRA_02_r32_iv2
+data:
+  train_jsonl: A7N/train.jsonl
+  val_jsonl: A7N/val.jsonl
+  val_unseen_jsonl: A7N/val_unseen8/val.jsonl
+  val_unseen_pool_jsonl: A7N/val_unseen8/ref_pool.jsonl
+  emotion:
+    map_file: configs/emotion/a7n_vox_v2.yaml   # 감정마다 문구 4개(① = v1)
+    instruct_ratio: 0.9                          # 전체 10% 는 지시문 없이 —
+    drop_only: [Neutrality]                      #   그 10% 는 Neutrality 문장에서만(감정 문장은 항상 지시문)
+  ref:
+    pool_jsonl: A7N/ref_pool.jsonl
+    ratio: 0.5                                   # 공식 권장 30~50%(1번은 0.7)
+  batch_size: 8                     # hw yaml(8) 대신 — 방식마다 메모리가 달라 실험에 둠
+optim:
+  lr: 1.0e-4
+  warmup_steps: 200
+train:
+  max_steps: 3000
+  grad_accum: 2
+  eval_every: 250
+  save_every: 250
+  keep_last: 12
+  resume: {enable: true, every: 500, keep: 1}
+media:
+  every: 500
+lora:
+  enable: true
+  r: 32
+  alpha: 32
