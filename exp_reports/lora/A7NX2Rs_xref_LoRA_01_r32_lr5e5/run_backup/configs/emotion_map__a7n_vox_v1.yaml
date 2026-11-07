@@ -1,0 +1,15 @@
+# configs/emotion/a7n_vox_v1.yaml — A7N 감정 7칸 → VoxCPM2 괄호 지시문 (2026-11-05 사용자 확정)
+#
+# 학습 text = "(지시문)문장" — VoxCPM2 Controllable cloning 과 같은 모양. 지시문은 변환 때 굽지 않고 학습 때 붙인다.
+# A = 감정을 누르는 쪽(low-key) · B = 드러내는 쪽(openly expressed) — 원 표 cv3 emotion_mode_map_v8_en 의 결 A/B 와 같은 뜻.
+# Neutrality 에도 지시문을 붙인다(사용자 결정 2026-11-05).
+# 키 = 데이터 jsonl 의 emotion 값. 데이터에 이 표에 없는 감정이 있으면 학습 시작 전에 에러.
+# 바꾸려면 이 파일을 고치지 말고 a7n_vox_v2.yaml 을 새로 만든다(학습한 run 의 기록이 어긋나지 않게).
+instruct:
+  Neutrality: "Calm, neutral tone, speaking plainly at a steady pace"
+  Happy-A: "Quietly happy, warm and content, a gentle smile in the voice"
+  Happy-B: "Very happy and excited, bright, cheerful and openly joyful"
+  Sad-A: "Quietly sad, subdued and low, holding back sorrow"
+  Sad-B: "Deeply sad and tearful, grieving, voice trembling with sorrow"
+  Angry-A: "Coldly irritated, restrained anger, firm and clipped"
+  Angry-B: "Furious and shouting, strong anger, loud and harsh"

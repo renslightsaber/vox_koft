@@ -1,0 +1,101 @@
+# configs/config.yaml — vox_koft 학습 설정 **스키마 + 기본값** (전체 FT · LoRA 공통)
+#
+# 병합 순서(뒤가 우선): 이 파일 → hardware/<gpu>.yaml → experiments/<sft|lora>/<ID>.yaml → --overlay → --set k=v
+# 🔴 이 파일에 없는 키를 다른 파일 · --set 에 쓰면 에러(오타 방지). 새 키는 그 키를 읽는 코드와 함께 여기에 추가한다.
+# 각 키 옆 ← 는 그 값을 읽는 코드 위치.
+# 경로: 상대경로는 model.* → paths.ckpt_root 기준, data.* → paths.data_root 기준.
+
+model:
+  init_model: VoxCPM2                 # ← sft/trainer.py build_model · 원본(또는 이어받을 FT export) 폴더
+
+data:
+  train_jsonl: null                   # ← data/dataset.py · voxko.data.prepare_* 산출물(필드 audio · text · speaker · emotion · duration)
+  val_jsonl: null                     # ← 학습 화자 val (같은 표본 · GPU 수 무관)
+  val_unseen_jsonl: null              # ← (선택) 처음 보는 화자 val → TB val_unseen/*
+  val_unseen_pool_jsonl: null         # ← val_unseen 화자의 무감정 ref 풀(val_unseen_jsonl 과 함께)
+  val_xref_jsonl: null                # ← (선택) 고정 ref 행(ref_audio)으로 된 추가 val(예: A7NX/val_xref.jsonl · 감정 ref 판) → TB val_xref/*
+  emotion:
+    map_file: configs/emotion/a7n_vox_v1.yaml   # ← 감정 라벨 → 영어 지시문 표. 데이터에 표에 없는 감정이 있으면 학습 전 에러
+    instruct_ratio: 1.0               # ← 지시문 "(…)" 을 붙이는 비율(0~1). 1.0 = 항상. 문장 · epoch 마다 결정적으로 정함
+    drop_only: null                   # ← (선택) [Neutrality] 처럼 주면 전체의 (1−instruct_ratio) 만큼을 이 감정 문장에서만 뺌 · 다른 감정은 항상 지시문
+  ref:
+    pool_jsonl: null                  # ← 화자별 무감정 ref 후보(voxko.data.prepare 의 ref_pool.jsonl). pool=any 면 train 문장도 후보
+    ratio: 0.7                        # ← reference 소리를 붙이는 비율(0~1). [103 ref 104] text 101 target 102 모양
+    pool: neutral                     # ← neutral = 같은 화자 Neutrality 문장만 | any = 같은 화자 아무 문장 (자기 자신 제외)
+    min_dur: 2.0                      # ← ref 후보 길이 하한(초)
+    max_dur: 10.0                     # ← ref 후보 길이 상한(초)
+  extra_sources: []                   # ← (선택) 추가 학습 데이터 [{name, train_jsonl, per_step}] — 창 끝에 per_step 문장 더함
+  max_seq_len: 1024                   # ← 문장 길이 근사(text + target + ref 최대 + 4)가 넘으면 학습에서 제외(packer 8192 잘림 방지)
+  batch_size: 8                       # ← GPU 당 micro-batch (hardware yaml 이 정함)
+  max_tokens: null                    # ← (선택) 동적 배치: B × 최대 길이 ≤ max_tokens. null = batch_size 고정
+  bucket_mult: 50                     # ← 길이 버킷 크기 = batch_size × bucket_mult
+  num_workers: 4
+  val_num_workers: 2
+  pin_memory: true
+
+optim:
+  lr: 1.0e-5                          # ← 공식 전체 FT 예 1e-5 · LoRA 예 1e-4
+  weight_decay: 0.01
+  betas: [0.9, 0.999]
+  eps: 1.0e-8
+  grad_clip: 1.0
+  scheduler: cosine_warmup            # ← constant_warmup | cosine_warmup
+  warmup_steps: 100
+
+train:
+  max_steps: 1000
+  smoke_steps: 3                      # ← --smoke 일 때 step 수
+  grad_accum: 2                       # ← 유효 배치 = batch_size × grad_accum × GPU 수
+  seed: 1986
+  log_every: 10
+  eval_every: 250                     # ← 0 = 끔
+  eval_max_batches: null              # ← null = val 전체(권장 — 배치 설정과 무관하게 같은 값)
+  eval_seed: 1986                     # ← val 의 CFM 잡음 · ref 선택 고정
+  save_every: 250                     # ← export(추론용) 저장 간격
+  keep_last: 12                       # ← step 폴더 보관 개수
+  resume:
+    enable: true                      # ← 재개용 파일(accelerate save_state: optimizer · RNG · TrainState) 저장 여부
+    every: 500                        # ← 재개용 파일 저장 간격(0 = save 마다)
+    keep: 1                           # ← 재개용 파일을 남길 최근 step 수
+  lambdas:
+    diff: 1.0                         # ← loss/diff (CFM 흐름 정합 MSE) 가중치
+    stop: 1.0                         # ← loss/stop (끝 판단 CE) 가중치
+  early_traj_steps: []                # ← 이 step 들은 save_every 와 별도로 export 를 남김(회전 무관 보관)
+  ddp_find_unused: false              # ← DDP find_unused_parameters
+
+lora:                                 # ← lora/trainer.py · `run.sh train lora` 일 때만 enable: true
+  enable: false
+  r: 32
+  alpha: 32
+  dropout: 0.0
+  enable_lm: true                     # ← base_lm · residual_lm 의 q/k/v/o
+  enable_dit: true                    # ← feat_decoder.estimator 의 q/k/v/o
+  enable_proj: false                  # ← enc_to_lm · lm_to_dit · res_to_dit · fusion_concat proj
+
+media:                                # ← TensorBoard 합성 샘플(rank0)
+  enable: true
+  every: 500
+  num_samples: 2
+  seed: 1986
+  cfg_value: 2.0
+  inference_timesteps: 10
+  max_len: 1000                       # ← 생성 최대 patch 수(6.25/초)
+
+export:
+  dtype: bfloat16                     # ← 전체 FT export 의 model.safetensors dtype (LoRA 는 fp32 그대로)
+
+logging:
+  tensorboard: true
+  run_name: null                      # 🔴 실험 yaml 파일명과 같게
+
+precision:
+  mixed_precision: bf16               # bf16 만 허용
+
+hardware:
+  expected_num_processes: null        # ← hardware yaml 이 정함. accelerate 프로세스 수와 다르면 시작 전 중단
+
+paths:
+  ckpt_root: ${VOX_CKPT_ROOT:-~/workspaces/ourckpts/voxcpm}
+  data_root: ${VOX_DATA_ROOT:-~/workspaces/preprocessed/vox_koft}
+  save_root: ${VOX_SAVE_ROOT:-~/workspaces/outputs/vox_koft/ckpt}
+  tb_root: ${VOX_TB_ROOT:-~/workspaces/outputs/vox_koft/runs}

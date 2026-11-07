@@ -1,0 +1,35 @@
+# A7NX2Rs6_xref_LoRA_01_r32_lr5e5 — "다른 칸 ref" LoRA(r32) · A7NX2Rs 에서 542 만 줄인 판 (2026-11-07 15:15 사용자 결정 · 지시문 q3tts 세션 15:30)
+#   왜: X2R02 의 감정 ↓ 가 542 화자에 몰림(D 재측정 542 A칸 e2v LoRA01 42% → X2R02 s4500 19% · unseen8 은 ↑)
+#       가설 = 542 학습 행("낭독 목소리 ref → 늘 무감정 정답")이 "낭독 말투 = 무감정" 지름길을 가르침 → A7NX2Rs 와 542 양만 다르게
+#   데이터: A7NX2Rs6(tools/make_a7nx2rs6.py) · 197,296행 = A7N 191,355(A7NX2Rs 와 똑같음) + 542 5,941(992명 × 약 6 · ref 1 · A7NX2Rs 542 행의 부분집합)
+#           542 비중 3.0%(A7NX2Rs 5.8%) · 무감정 비율 10.6%(A7NX2Rs 13.2% — 542 가 무감정이라 함께 줄어듦)
+#   설정: A7NX2Rs_xref_LoRA_01_r32_lr5e5 복제 — 데이터 경로(train · val_xref) · run_name · 이 주석만 다름
+#   짝: A7NX2Rs_xref_LoRA_01_r32_lr5e5(542 양만 다름) · 비교: LoRA01 · A7NX3 · A7NX2R lr 5e-5
+#   실행(byobu): ./scripts/run.sh train lora --exp configs/experiments/lora/A7NX2Rs6_xref_LoRA_01_r32_lr5e5.yaml --hw rtxpro6000_2gpu --accel 2gpu_b
+logging:
+  run_name: A7NX2Rs6_xref_LoRA_01_r32_lr5e5
+data:
+  train_jsonl: A7NX2Rs6/train.jsonl
+  val_jsonl: A7N/val.jsonl
+  val_unseen_jsonl: A7N/val_unseen8/val.jsonl
+  val_unseen_pool_jsonl: A7N/val_unseen8/ref_pool.jsonl
+  val_xref_jsonl: A7NX2Rs6/val_xref.jsonl   # 감정 ref 판 val(192) → TB val_xref/*
+  ref:
+    pool_jsonl: A7N/ref_pool.jsonl
+  batch_size: 8                     # hw yaml(8) 대신 — 방식마다 메모리가 달라 실험에 둠
+optim:
+  lr: 5.0e-5
+  warmup_steps: 200
+train:
+  max_steps: 4500
+  grad_accum: 2
+  eval_every: 500
+  save_every: 500
+  keep_last: 9
+  resume: {enable: true, every: 500, keep: 1}
+media:
+  every: 500
+lora:
+  enable: true
+  r: 32
+  alpha: 32
