@@ -102,7 +102,10 @@
 - 지시문 [`_handoff/20261107_1840_prompt_a7nu_full.md`](../../_handoff/20261107_1840_prompt_a7nu_full.md). Claude 가 직접 진행.
   - Rs · Rs6 재개용 파일 삭제 완료: 각 run 약 10.03GB → 0.65GB(지우기 전후 같은 소리 확인).
   - **18:44 학습 시작**(nohup · GPU 2,3, `A7NUX2Rs6 && A7NUX2s`, 한 판 약 50분 예상). 시작 직후 약 1.4 ~ 1.7 step/s, 실행 로그 `~/workspaces/outputs/vox_koft/ckpt/_chain_logs/A7NU_2runs_20261107_094434UTC.log`.
-  - 이 시점 종료 · 평가는 이 문서 범위 밖(19시까지 학습 중).
+  - (21:36 보완) 학습 18:44 ~ 20:26 · 평가 21:21 끝 — [결과](../reports/20261107_A7NU_results.md)
+    - 새 5목소리 효과 거의 없음(9 step 평균 e2v 6칸 51.7 → 51.8% · 기쁨B 24 → 23%).
+    - 542 = 0 이면 542 화자 A칸 e2v 32 → 42%(LoRA01 수준) · 대가로 542 목소리 유사도 0.687 → 0.669.
+    - 무감정 비율도 10.7 → 8.05% 로 함께 줄어 원인(542 지름길 vs 무감정 비율)은 아직 못 가름.
 
 ## 2. 사용자 결정 · 청음 (누가 · 언제)
 | 시각 | 누가 | 내용 |
@@ -115,14 +118,15 @@
 | 오후 | 사용자(청음) | 감정 ref 판 8줄 × 4모델 판정(위 §1-5) |
 | 18:38 | 사용자(청음 + 결정) | 새 5목소리 · Rs / Rs6 재개용 파일 삭제 · 다음 두 판(542 있음 / 없음) |
 
-## 3. 남은 물음 (19시 기준)
+## 3. 남은 물음 (21:36 기준)
 - A7NX2Rs6 s4500 · X2Rs01 s4000 을 X2R02 s4500 · A7NX3 s4500 · LoRA01 s1500 과 **청음으로** 비교(특히 542 화자 A칸 · 기쁨B) — 대기.
-- 원인: 542 유무 vs ref 개수 — A7NUX2s(542 = 0)의 결과로 가름.
+- 원인: 542 유무 vs ref 개수 — (21:36) A7NUX2s 결과 542 를 빼면 542 A칸이 돌아와 **ref 개수보다 542 유무** 쪽. 다만 무감정 비율과 섞여 있음.
+- A7NU 두 판(A7NUX2s s4500 · A7NUX2Rs6 s3500) 청음 판정 — 대기.
 - 11/06 부터 남은 것: best-of-N 규칙 · 가상 화자 D안 · 본 생성 규모(결정 기록 없음).
 - A7NU 두 판의 재개용 파일은 사용자 승인 뒤에 정리.
 
 ## 4. 링크
-- 인수인계(모두 [`_handoff/`](../../_handoff/)): `20261107_0145_handoff_main.md`(중간판) · `20261107_0350_handoff_main.md` · `20261107_1215_handoff_main.md` · `20261107_1718_handoff_main.md` · `20261107_1850_handoff_main.md`. 지시문 5개(`0035` · `1145` · `1530` · `1650` · `1840` prompt)는 q3tts 세션 작성.
-- 보고서: [A7NX · A7NX3](../reports/20261107_A7NX_A7NX3_results.md) · [A7NX2R](../reports/20261107_A7NX2R_results.md) · [CFG · 그림 · 감정 ref 판](../reports/20261107_cfg_test_emo_voice.md) · [A7NX2Rs · Rs6](../reports/20261107_A7NX2Rs_results.md)
+- 인수인계(모두 [`_handoff/`](../../_handoff/)): `20261107_0145_handoff_main.md`(중간판) · `20261107_0350_handoff_main.md` · `20261107_1215_handoff_main.md` · `20261107_1718_handoff_main.md` · `20261107_1850_handoff_main.md` · `20261107_2136_handoff_main.md`. 지시문 5개(`0035` · `1145` · `1530` · `1650` · `1840` prompt)는 q3tts 세션 작성.
+- 보고서: [A7NX · A7NX3](../reports/20261107_A7NX_A7NX3_results.md) · [A7NX2R](../reports/20261107_A7NX2R_results.md) · [CFG · 그림 · 감정 ref 판](../reports/20261107_cfg_test_emo_voice.md) · [A7NX2Rs · Rs6](../reports/20261107_A7NX2Rs_results.md) · [A7NU](../reports/20261107_A7NU_results.md)
 - 계획 [plan/20261106_xref_lora_runs.md](../plan/20261106_xref_lora_runs.md) §4 · 성공 기준 [plan/20261105_success_criteria_and_next_runs.md](../plan/20261105_success_criteria_and_next_runs.md) · 데이터 [A7NX_vox_koft.md](../datasets/A7NX_vox_koft.md) · 설명 [why_mix_542](../explanations/20261107_why_mix_542.md) · [opinion_A7NX2R_A7NX3](../explanations/20261107_opinion_A7NX2R_A7NX3.md)
 - q3tts 쪽(참고): `~/workspaces/q3tts_koft/docs/history/20261107_a7nx2r_sref_v4_night.md` · `~/workspaces/q3tts_koft/docs/datasets/A7NX_q3tts.md` · `~/workspaces/q3tts_koft/docs/reports/20261107_xvec_emotion_direction.md`(x-vector 감정 방향 실험, 15:15 승인 · 16:24 끝)

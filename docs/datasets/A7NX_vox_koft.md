@@ -111,5 +111,6 @@
 | `A7NUX2s` | 200,629 | 0 | 8.05% | `A7NUX2s_xref_LoRA_01_r32_lr5e5` |
 
 - 파일: `~/workspaces/preprocessed/vox_koft/{A7NU, A7NUX2Rs6, A7NUX2s}/` · 도구 `tools/make_a7nux2rs6.py --n542 6 | 0`
-- 학습: 11/07 18:44 KST 부터 두 판 연속(Claude nohup · GPU 2,3 · 사용자 승인 18:38)
+- 학습: 11/07 18:44 ~ 20:26 KST 두 판 연속(Claude nohup · GPU 2,3 · 사용자 승인 18:38) · 평가 21:21 끝
+- 결과([보고서](../reports/20261107_A7NU_results.md)): 새 5목소리는 숫자로 효과 없음 · 542 를 0 으로 하면 542 화자 A칸 감정 e2v 32 → 42%(무감정 비율도 함께 줄어 원인은 아직 못 가름)
 - 자세한 설명: q3tts_koft `docs/datasets/aihub_71349_unused26.md` · 지시문 `_handoff/20261107_1840_prompt_a7nu_full.md`
