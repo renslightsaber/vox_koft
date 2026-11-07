@@ -28,7 +28,11 @@ H = Path.home() / "workspaces"
 OUT = H / "outputs/vox_koft"
 D = H / "tmp_listen/vox_koft/d_eval"
 ENV = {k: H.parent / f"miniforge3/envs/{v}/bin/python" for k, v in (("vox", "voxcpm"), ("q3", "q3tts"), ("ser", "q3tts_ser"))}
-SHORT = {"A7N_ref_FT_01": "FT01", "A7N_ref_LoRA_01_r32": "LoRA01", "A7N_ref_FT_02_iv2": "FT02iv2", "A7N_ref_LoRA_02_r32_iv2": "LoRA02iv2"}
+SHORT = {"A7N_ref_FT_01": "FT01", "A7N_ref_LoRA_01_r32": "LoRA01", "A7N_ref_FT_02_iv2": "FT02iv2", "A7N_ref_LoRA_02_r32_iv2": "LoRA02iv2",
+         "A7NX_xref_LoRA_01_r32": "A7NX", "A7NX3_xref_LoRA_01_r32": "A7NX3",                       # 2026-11-07 다른 칸 ref
+         "A7NX2R_xref_LoRA_01_r32": "X2R01", "A7NX2R_xref_LoRA_02_r32_lr5e5": "X2R02lr5e5",
+         "A7NX2Rs_xref_LoRA_01_r32_lr5e5": "X2Rs01lr5e5",
+         "A7NX2Rs6_xref_LoRA_01_r32_lr5e5": "X2Rs6lr5e5"}
 DE = str(ROOT / "voxko/eval/d_eval.py")
 
 

@@ -19,7 +19,11 @@ H = Path.home() / "workspaces"
 D = H / "tmp_listen/vox_koft/d_eval"
 ROOT = Path(__file__).resolve().parents[1]
 RUNS = [("FT_01", "FT01", "sft/A7N_ref_FT_01"), ("LoRA_01_r32", "LoRA01", "lora/A7N_ref_LoRA_01_r32"),
-        ("FT_02_iv2", "FT02iv2", "sft/A7N_ref_FT_02_iv2"), ("LoRA_02_r32_iv2", "LoRA02iv2", "lora/A7N_ref_LoRA_02_r32_iv2")]
+        ("FT_02_iv2", "FT02iv2", "sft/A7N_ref_FT_02_iv2"), ("LoRA_02_r32_iv2", "LoRA02iv2", "lora/A7N_ref_LoRA_02_r32_iv2"),
+        ("A7NX_xref_LoRA_01", "A7NX", "lora/A7NX_xref_LoRA_01_r32"), ("A7NX3_xref_LoRA_01", "A7NX3", "lora/A7NX3_xref_LoRA_01_r32"),  # 2026-11-07
+        ("A7NX2R_xref_LoRA_01", "X2R01", "lora/A7NX2R_xref_LoRA_01_r32"), ("A7NX2R_xref_LoRA_02_lr5e5", "X2R02lr5e5", "lora/A7NX2R_xref_LoRA_02_r32_lr5e5"),
+        ("A7NX2Rs_xref_LoRA_01_lr5e5", "X2Rs01lr5e5", "lora/A7NX2Rs_xref_LoRA_01_r32_lr5e5"),
+        ("A7NX2Rs6_xref_LoRA_01_lr5e5", "X2Rs6lr5e5", "lora/A7NX2Rs6_xref_LoRA_01_r32_lr5e5")]
 CELLS = ["Neutrality", "Happy-A", "Happy-B", "Sad-A", "Sad-B", "Angry-A", "Angry-B"]
 KO = {"Neutrality": "중립", "Happy-A": "기쁨A", "Happy-B": "기쁨B", "Sad-A": "슬픔A", "Sad-B": "슬픔B", "Angry-A": "분노A", "Angry-B": "분노B"}
 OLD = D / "_backup_20261106_0955_before_neutral/summary.json"
@@ -38,6 +42,8 @@ def main():
         ev_old = {int(t.split("_s")[1]): m["전체"]["score"] for t, m in old.items() if t.startswith(short + "_s")}
         order = sorted(ev, key=lambda s: -ev[s])
         order_old = sorted(ev_old, key=lambda s: -ev_old[s])
+        if not ev:                                                  # 아직 평가 전 run(예: 학습 중)은 건너뜀
+            continue
         an = ROOT / "exp_reports" / rel / "run_backup/analysis.json"
         tb = json.load(open(an))["best"]["val_unseen/loss"]["top5"] if an.exists() else []
         pick = [(s, True) for s in order[:5]] + [(s, False) for s in tb if s not in order][: max(0, 5 - len(order))]

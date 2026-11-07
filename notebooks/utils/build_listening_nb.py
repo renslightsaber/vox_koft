@@ -19,7 +19,11 @@ import nbformat as nbf
 ROOT = Path(__file__).resolve().parents[2]
 H = Path.home() / "workspaces"
 D_EVAL = H / "tmp_listen/vox_koft/d_eval"
-SHORT = {"A7N_ref_FT_01": "FT01", "A7N_ref_LoRA_01_r32": "LoRA01", "A7N_ref_FT_02_iv2": "FT02iv2", "A7N_ref_LoRA_02_r32_iv2": "LoRA02iv2"}
+SHORT = {"A7N_ref_FT_01": "FT01", "A7N_ref_LoRA_01_r32": "LoRA01", "A7N_ref_FT_02_iv2": "FT02iv2", "A7N_ref_LoRA_02_r32_iv2": "LoRA02iv2",
+         "A7NX_xref_LoRA_01_r32": "A7NX", "A7NX3_xref_LoRA_01_r32": "A7NX3",                       # 2026-11-07 다른 칸 ref
+         "A7NX2R_xref_LoRA_01_r32": "X2R01", "A7NX2R_xref_LoRA_02_r32_lr5e5": "X2R02lr5e5",
+         "A7NX2Rs_xref_LoRA_01_r32_lr5e5": "X2Rs01lr5e5",
+         "A7NX2Rs6_xref_LoRA_01_r32_lr5e5": "X2Rs6lr5e5"}
 
 
 def best_info(run: str) -> dict:
