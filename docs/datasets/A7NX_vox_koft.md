@@ -43,3 +43,49 @@
 - 설정: `configs/experiments/lora/A7NX_xref_LoRA_01_r32.yaml`(3,000 step) · `A7NX3_xref_LoRA_01_r32.yaml`(9,000 step).
 - 메모리: 2GPU 최장 배치(정답 21~23초 + ref 6.7~8.8초)에서 실제 점유가 최대 54.1GB 입니다(배치 8 × accum 2 · LoRA_01 은 55.7GB).
 - 다시 만들기: `~/miniforge3/envs/q3tts/bin/python tools/make_a7nx.py`. 고칠 때는 이유를 기록합니다.
+
+## 🆕 A7NX2R — A7NX3 수정안(11/07 00:35 · q3tts 세션 작성 · 사용자 결정)
+- ref 3개 → **2개** + **542 무감정 992명 × 12문장**(같은 화자 다른 문장 ref 2개 · Neutrality 지시문) + 음질 나쁜 정답 · ref 제외
+- 229,820행(A7N 206,310 + 542 23,510) · 무감정 비율 23.2%(A7NX 14.5%) · 검사 모두 0 · `~/workspaces/preprocessed/vox_koft/A7NX2R/` · 도구 `tools/make_a7nx2r.py`
+- 자세히: `~/workspaces/q3tts_koft/docs/datasets/A7NX_q3tts.md` §8 · 왜 542 인가: [docs/explanations/20261107_why_mix_542.md](../explanations/20261107_why_mix_542.md)
+- 학습 지시문: [_handoff/20261107_0035_prompt_a7nx_s1_and_a7nx2r.md](../../_handoff/20261107_0035_prompt_a7nx_s1_and_a7nx2r.md)
+
+## 🆕 A7NX2Rs — A7NX2R 수정안: 감정 되찾기(11/07 10시 · 사용자 결정)
+**왜**
+- A7NX2R 두 판은 목소리가 지금까지 중 가장 좋았지만 감정이 약해졌습니다(e2v 6칸 47~54% vs LoRA01 52~57%).
+- 원인을 **무감정 비율 14.5% → 23.2%** 로 봅니다. 4,500 step 동안 감정 정답을 연습한 횟수가 A7NX3 보다 약 10% 적었습니다.
+- 자세한 의견: [A7NX3 · A7NX2R 의견](../explanations/20261107_opinion_A7NX2R_A7NX3.md)(q3tts_koft 세션 작성 · 복사본)
+
+**바꾼 것은 하나뿐** — 무감정 정답(A7N 무감정 · 542)의 ref 를 2개 → **1개**
+- 감정 정답 176,400행은 A7NX2R 과 **똑같습니다**(같은 정답 · 같은 ref, 코드로 확인).
+- 542 화자 992명 · 문장 11,755개도 그대로입니다. 반복만 줄였습니다.
+- 비유: 성대모사 학원에서 "1,000명 명단과 대본은 그대로, 평소 말투 대본만 두 번 → 한 번 연습". 남는 수업 시간은 감정 연기로 갑니다.
+
+| | A7NX3 | A7NX2R | **A7NX2Rs** |
+|---|---|---|---|
+| 행 수 | 313,992 | 229,820 | **203,110** |
+| 정답당 ref | 3 | 2 | 감정 2 · 무감정 1 |
+| 542 | 없음 | 992명 × 12 · ref 2 | 992명 × 12 · **ref 1** |
+| 무감정 비율 | 14.5% | 23.2% | **13.2%** |
+| 542 비중 | 0 | 10.2% | **5.8%** |
+| 4,500 step 동안 감정 정답 연습 | 약 12.3만 | 약 11.1만 | **약 12.5만** |
+| 542 화자당 연습(4,500 step) | 0 | 약 15번 | 약 8.5번 |
+
+**기대와 리스크**
+- 기대: 감정이 A7NX3 수준으로 돌아오고, 처음 보는 화자 목소리 이득은 남음.
+- 리스크 1: 목소리 이득이 "542 를 많이 본 양" 덕이었다면 함께 줄어 A7NX3 와 비슷해질 수 있습니다(그러면 "542 는 양이 필요하다"를 배움).
+- 리스크 2: 무감정 정답의 ref 가 1개라 "감정 ref → 무감정으로 말하기" 연습이 절반입니다. 감정 ref 판의 "중립 칸 중립" 지표를 봐야 합니다.
+
+**파일 · 검증**
+- `~/workspaces/preprocessed/{vox_koft,q3tts_koft}/A7NX2Rs/{train.jsonl, val_xref.jsonl, dataset_info.json, _READY}` · 도구 `~/workspaces/vox_koft/tools/make_a7nx2rs.py`
+- 검사 7개(같은 칸 ref · 자기 자신 · 음질 걸림 정답 · ref · 처음 보는 화자 누출 · 중복 · 다른 화자 ref) 모두 0 · 두 프로젝트 행 순서 같음 · 파일 표본 있음
+- val_xref = A7NX 것 그대로(192)
+- 학습: vox_koft `A7NX2Rs_xref_LoRA_01_r32_lr5e5`(lr 5e-5 한 판 · 사용자 결정) — vox 지시문 [_handoff/20261107_1145_prompt_x2r_cleanup_cfg_a7nx2rs.md](../../_handoff/20261107_1145_prompt_x2r_cleanup_cfg_a7nx2rs.md) · 11/07 15:38 ~ 16:27 KST 학습 끝(Claude nohup · GPU 2,3)
+
+## 🆕 A7NX2Rs6 — 542 를 절반으로(11/07 15시 · q3tts 세션 작성 · 사용자 결정)
+- 왜: X2R02 의 감정 ↓ 는 **542 화자에 몰려 있습니다**(D 재측정 542 A칸 e2v LoRA01 42% → X2R02 s4500 19% · unseen8 은 ↑). 가설 = 542 행("낭독 목소리 ref → 늘 무감정")이 만든 지름길.
+- 바꾼 것: A7NX2Rs 에서 **542 만 화자당 12 → 6문장**(992명 그대로) · A7N 행은 완전히 같음 · 542 행은 A7NX2Rs 의 부분집합
+- 수량: 197,296행 = A7N 191,355 + 542 5,941 · 542 **3.0%**(A7NX2Rs 5.8%) · 무감정 **10.6%**(13.2%, 542 가 무감정이라 함께 줄어듦)
+- 파일: `~/workspaces/preprocessed/vox_koft/A7NX2Rs6/` · 도구 `tools/make_a7nx2rs6.py` · 검사 7개 0
+- 자세한 설명: q3tts_koft `docs/datasets/A7NX_q3tts.md` §10 · 지시문 `_handoff/20261107_1530_prompt_a7nx2rs_x2_full.md`
+- 학습: vox_koft `A7NX2Rs6_xref_LoRA_01_r32_lr5e5`(설정은 A7NX2Rs 판과 데이터 경로만 다름) · 11/07 16:28 ~ 17:17 KST 학습 끝(Claude nohup · GPU 2,3)
