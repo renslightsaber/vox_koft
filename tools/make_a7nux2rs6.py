@@ -9,6 +9,11 @@ A7NUX2s   = 위와 같고 **542 = 0**(`--n542 0`)
       role=ref_only(0019 애니 · 0036 애니 무감정)는 ref 후보로만 쓰고 정답으로 쓰지 않음. A7NU 는 음질 · 끝 잘림을 이미 거름.
     ~/miniforge3/envs/q3tts/bin/python tools/make_a7nux2rs6.py --n542 6     # → A7NUX2Rs6
     ~/miniforge3/envs/q3tts/bin/python tools/make_a7nux2rs6.py --n542 0     # → A7NUX2s
+    ~/miniforge3/envs/q3tts/bin/python tools/make_a7nux2rs6.py --n542 0 --neu_fill   # → A7NUX2sN(11/07 21:4x 추가)
+A7NUX2sN = A7NUX2s 와 같고, 무감정 정답 일부(5,941개 = A7NUX2Rs6 의 542 행 수)에 **같은 규칙으로 ref 를 하나 더**(두 번째 ref).
+왜: A7NUX2s 는 542 를 빼면서 무감정 비율도 10.7 → 8.05% 로 줄어 "542 지름길" vs "무감정 비율" 을 못 가름.
+    A7NUX2sN 은 행 수 · 무감정 비율이 A7NUX2Rs6 과 같고 "그 무감정 행이 542 화자인지(Rs6) 아닌지(sN)" 만 다름.
+    첫 번째 ref 는 A7NUX2s 와 똑같음(같은 rng 순서) → A7NUX2s 의 모든 행 ⊂ A7NUX2sN.
 --- 아래는 A7NX2Rs6 원래 설명 ---
 A7NX2Rs6 메타데이터 만들기(2026-11-07 15시 · q3tts_koft 세션 작성 · 사용자 결정 "542 줄인 판 추가")
 A7NX2Rs6 = A7NX2Rs 에서 **542 만 화자당 12 → 6문장**(화자 992명 그대로 · A7N 행은 A7NX2Rs 와 똑같음).
@@ -63,8 +68,11 @@ def bad_set(files, cols):
 
 def main():
     global N542, NAME
-    ap = argparse.ArgumentParser(); ap.add_argument("--n542", type=int, choices=[6, 0], required=True); N542 = ap.parse_args().n542
-    NAME = "A7NUX2Rs6" if N542 else "A7NUX2s"
+    ap = argparse.ArgumentParser(); ap.add_argument("--n542", type=int, choices=[6, 0], required=True)
+    ap.add_argument("--neu_fill", action="store_true", help="542 대신 무감정 정답에 두 번째 ref(A7NUX2sN)")
+    a = ap.parse_args(); N542 = a.n542
+    assert not (a.neu_fill and N542), "--neu_fill 은 --n542 0 과 함께"
+    NAME = "A7NUX2sN" if a.neu_fill else ("A7NUX2Rs6" if N542 else "A7NUX2s")
     nu = jl(V / "A7NU/rows.jsonl")
     nu_t = [r for r in nu if r["role"] == "target"]
     bad_a7n = bad_set(["a7n_train.csv", "ref_neutral466.csv"], ["bad_snr", "bad_hf"])
@@ -100,6 +108,13 @@ def main():
             c = avail[g][rng.randrange(len(avail[g]))]; used.add(c["utt"]); out.append(c)
         return out
 
+    # ---- (A7NUX2sN) 두 번째 ref 를 받을 무감정 정답 고르기 ----
+    fill = set()
+    if a.neu_fill:
+        n_fill = json.load(open(V / "A7NUX2Rs6/dataset_info.json"))["counts"]["rows_542"]
+        elig = sorted(r["utt"] for r in tr + nu_t if r["emotion"] == "Neutrality" and r["speaker"] in keep_spk and r["utt"] not in bad_a7n
+                      and len([c for c in cand[r["speaker"]] if c["emotion"] != r["emotion"] and c["utt"] != r["utt"]]) >= 2)
+        fill = set(random.Random(f"{SEED}|neufill").sample(elig, n_fill))
     rows, n_bad_tgt = [], 0
     for r in tr + nu_t:
         if r["speaker"] not in keep_spk:
@@ -107,7 +122,7 @@ def main():
         if r["utt"] in bad_a7n:
             n_bad_tgt += 1; continue
         cs = [c for c in cand[r["speaker"]] if c["emotion"] != r["emotion"] and c["utt"] != r["utt"]]
-        for j, c in enumerate(pick(r, K_NEU if r["emotion"] == "Neutrality" else K, "train2", cs)):
+        for j, c in enumerate(pick(r, (2 if r["utt"] in fill else K_NEU) if r["emotion"] == "Neutrality" else K, "train2", cs)):
             rows.append(dict(r, src="A7NU" if "role" in r else "A7N", utt_x=f"{r['utt']}__x{j}", ref_utt=c["utt"], ref_audio=c["audio"], ref_audio24=c["audio24"],
                              ref_emotion=c["emotion"], ref_kind=kind(c["emotion"]), ref_duration=c["duration"]))
     # ---- 542 쪽 ----
@@ -159,7 +174,7 @@ def main():
     emo = collections.Counter(r["emotion"] for r in rows)
     emo_of = {r["utt"]: r["emotion"] for r in rows}
     info = dict(name=NAME, created_kst=time.strftime("%Y-%m-%d %H:%M", time.gmtime(time.time() + 9 * 3600)),
-                why=("A7NX2Rs6 + A7NU 5목소리" if N542 else "A7NUX2Rs6 에서 542 = 0") + " (사용자 11/07 18:38): 542 를 줄여도 542 A칸 감정이 안 돌아옴 → 542 있음/없음과 ref 개수를 가름 · 감정 화자 +5",
+                why=("A7NX2Rs6 + A7NU 5목소리" if N542 else ("A7NUX2s + 무감정 정답 5,941개에 두 번째 ref(행 수 · 무감정 비율 = A7NUX2Rs6 · 사용자 11/07 21:36)" if a.neu_fill else "A7NUX2Rs6 에서 542 = 0")) + " (사용자 11/07 18:38): 542 를 줄여도 542 A칸 감정이 안 돌아옴 → 542 있음/없음과 ref 개수를 가름 · 감정 화자 +5",
                 rule=dict(a7n="make_a7nx.py 규칙 · 정답 · ref 음질 bad_snr|bad_hf 제외", refs_per_target=dict(emotion=K, neutral=K_NEU), weights=W,
                           s542=f"bad_any 없는 녹음 · 화자마다 {N542}개 · 2~{MAX542}초 · ref = 같은 화자 다른 문장 {K_NEU}개 · Neutrality 지시문",
                           val_xref="A7NX/val_xref.jsonl 그대로(192)", seed=SEED),
@@ -174,7 +189,8 @@ def main():
                             share_542=round(sum(r["src"] == "542" for r in rows) / len(rows), 4),
                             share_neutral=round(emo["Neutrality"] / len(rows), 4), target_emotion=dict(emo),
                             ref_kind=dict(collections.Counter(r["ref_kind"] for r in rows)),
-                            targets_with_fewer_refs=sum(1 for u, n in collections.Counter(r["utt"] for r in rows).items() if n < (K_NEU if emo_of[u] == "Neutrality" else K))),
+                            targets_with_fewer_refs=sum(1 for u, n in collections.Counter(r["utt"] for r in rows).items() if n < ((2 if u in fill else K_NEU) if emo_of[u] == "Neutrality" else K)),
+                            neu_fill_targets=len(fill)),
                 checks=chk, code=str(Path(__file__).resolve()))
     assert all(v == 0 for v in chk.values()), chk
     for root in (V, Q):
