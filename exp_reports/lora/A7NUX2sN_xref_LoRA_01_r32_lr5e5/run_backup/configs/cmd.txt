@@ -1,0 +1,17 @@
+# cmd.txt — run A7NUX2sN_xref_LoRA_01_r32_lr5e5 (fresh)
+time        : 2026-11-07 12:56:23 UTC
+host        : rtxnode0  user=rohoon
+conda env   : voxcpm
+world size  : 2  CUDA_VISIBLE_DEVICES=2,3
+seed        : 1986
+alloc conf  : PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+gpu         : NVIDIA RTX PRO 6000 Blackwell Server Edition
+physical gpu: [2, 3]  (nvidia-smi 번호)
+versions    : torch 2.8.0+cu128 · transformers 4.57.3 · accelerate 1.12.0
+train_jsonl : /DATA/home/rohoon/workspaces/preprocessed/vox_koft/A7NUX2sN/train.jsonl  (rows=206570, md5=ac9d9d07eef6)
+val_jsonl   : /DATA/home/rohoon/workspaces/preprocessed/vox_koft/A7N/val.jsonl  (rows=212, md5=0d2f939f1096)
+emotion map : /DATA/home/rohoon/workspaces/vox_koft/configs/emotion/a7n_vox_v1.yaml  (md5=76c30f902c34)
+init_model  : /DATA/home/rohoon/workspaces/ourckpts/voxcpm/VoxCPM2
+launcher    : scripts/run.sh train lora --exp configs/experiments/lora/A7NUX2sN_xref_LoRA_01_r32_lr5e5.yaml --hw rtxpro6000_2gpu --accel 2gpu_b 
+accel file  : /DATA/home/rohoon/workspaces/vox_koft/configs/accelerate/rtxpro6000_2gpu_b.yaml
+argv        : /DATA/home/rohoon/workspaces/vox_koft/voxko/lora/train.py --exp configs/experiments/lora/A7NUX2sN_xref_LoRA_01_r32_lr5e5.yaml --hw rtxpro6000_2gpu
