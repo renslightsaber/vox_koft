@@ -63,6 +63,15 @@
 | A7NUX2s (+5 voices, no 542) | NUX2slr5e5_s3500 | 64.6% ± 4.9 | 0.6309 ± 0.0094 |
 | A7NUX2s (+5 voices, no 542) | NUX2slr5e5_s4000 | 61.5% ± 5.0 | 0.6312 ± 0.0094 |
 | A7NUX2s (+5 voices, no 542) | NUX2slr5e5_s4500 | 60.4% ± 5.0 | 0.6303 ± 0.0093 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s500 | 50.0% ± 5.1 | 0.6172 ± 0.0098 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s1000 | 61.5% ± 5.0 | 0.6334 ± 0.0079 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s1500 | 60.4% ± 5.0 | 0.6333 ± 0.0074 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s2000 | 60.4% ± 5.0 | 0.6344 ± 0.0078 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s2500 | 63.5% ± 4.9 | 0.6243 ± 0.0087 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s3000 | 63.5% ± 4.9 | 0.6317 ± 0.0080 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s3500 | 61.5% ± 5.0 | 0.6272 ± 0.0080 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s4000 | 69.8% ± 4.7 | 0.6274 ± 0.0089 |
+| A7NUX2sN (no 542, neutral refilled) | NUX2sNlr5e5_s4500 | 64.6% ± 4.9 | 0.6275 ± 0.0083 |
 | 원본 | base | 55.2% ± 5.1 | 0.5834 ± 0.0125 |
 | CFG 시험 | X2R02_s2000_cfg25 | 63.5% ± 4.9 | 0.6233 ± 0.0080 |
 | CFG 시험 | X2R02_s2000_cfg30 | 65.6% ± 4.8 | 0.6212 ± 0.0081 |

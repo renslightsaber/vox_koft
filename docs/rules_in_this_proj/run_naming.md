@@ -15,7 +15,7 @@ A7N _ ref _ LoRA _ 01 _ r32
  │     │     │      └ 번호: 같은 계열 안의 변형
  │     │     └ 학습 방식: FT(전체) · LoRA
  │     └ 조건: ref = 무감정 ref + 지시문 · xref = 같은 사람 다른 칸 ref + 지시문 · noref = 지시문만 · inst0 = 지시문 없이
- └ 데이터: A7N · A7NX · A7NX3 · A7NX2R · A7NX2Rs · A7NX2Rs6 · A7NUX2Rs6 · A7NUX2s(다른 칸 ref) · A7N542(542 섞음) · A7N100(smoke 100문장)
+ └ 데이터: A7N · A7NX · A7NX3 · A7NX2R · A7NX2Rs · A7NX2Rs6 · A7NUX2Rs6 · A7NUX2s · A7NUX2sN(다른 칸 ref) · A7N542(542 섞음) · A7N100(smoke 100문장)
 ```
 
 ## 1. 칸별 뜻
@@ -32,6 +32,7 @@ A7N _ ref _ LoRA _ 01 _ r32
 | `A7NX2Rs6` | A7NX2Rs 에서 **542 만 화자당 12 → 6문장**(A7N 행 같음 · 542 행은 부분집합) · 542 3.0% · 무감정 10.6% · 197,296행 — 2026-11-07 15시 | `tools/make_a7nx2rs6.py` · `A7NX2Rs6/dataset_info.json` |
 | `A7NUX2Rs6` | A7NX2Rs6 + **안 쓴 71349 화자의 새 5목소리**(애니체 4명 · 0019 친절체 · 강도 2 → B · 9,274행) · A7N · 542 행 같음 · 542 2.9% · 무감정 10.7% · 206,570행 — 2026-11-07 18시 | `tools/make_a7nux2rs6.py --n542 6` · `A7NUX2Rs6/dataset_info.json` |
 | `A7NUX2s` | A7NUX2Rs6 에서 **542 = 0** · 무감정 8.1% · 200,629행 — 2026-11-07 18시 | `tools/make_a7nux2rs6.py --n542 0` · `A7NUX2s/dataset_info.json` |
+| `A7NUX2sN` | A7NUX2s + 무감정 정답 5,941행(542 자리를 A7N · A7NU 무감정으로 채움 · ref 는 감정 녹음) · **542 = 0 · 무감정 10.69%** · 206,570행 — 2026-11-07 21시 | `tools/make_a7nux2rs6.py --n542 0 --neu_fill` · `A7NUX2sN/dataset_info.json` |
 | `A7N542` | A7N + AIHub 542 무감정(`data.extra_sources`) — 아직 안 씀 | 같음 |
 
 ### 조건
@@ -49,7 +50,7 @@ A7N _ ref _ LoRA _ 01 _ r32
 | `_r16` · `_r64` | LoRA rank | `A7N_ref_LoRA_01_r16` |
 | `_lr5e6` · `_lr5e5` | 학습률 | `A7N_ref_FT_01_lr5e6` |
 | `_ref05` | ref 비율 0.5 | `A7N_ref_FT_02_ref05` |
-| `_lr5e5` 등 | (위 학습률 칸과 같음) — `A7NX2R_xref_LoRA_02_r32_lr5e5` · `A7NX2Rs_xref_LoRA_01_r32_lr5e5` · `A7NX2Rs6_xref_LoRA_01_r32_lr5e5` · `A7NUX2Rs6_xref_LoRA_01_r32_lr5e5` · `A7NUX2s_xref_LoRA_01_r32_lr5e5`(2026-11-07) | |
+| `_lr5e5` 등 | (위 학습률 칸과 같음) — `A7NX2R_xref_LoRA_02_r32_lr5e5` · `A7NX2Rs_xref_LoRA_01_r32_lr5e5` · `A7NX2Rs6_xref_LoRA_01_r32_lr5e5` · `A7NUX2Rs6_xref_LoRA_01_r32_lr5e5` · `A7NUX2s_xref_LoRA_01_r32_lr5e5` · `A7NUX2sN_xref_LoRA_01_r32_lr5e5`(2026-11-07) | |
 | `_iv2` | **웹 조사판**: 지시문 표 v2(감정마다 4문구) · 지시문 0.9(빼는 10% 는 Neutrality 만) · ref 0.5 — 2026-11-06 | `A7N_ref_FT_02_iv2` · `A7N_ref_LoRA_02_r32_iv2` |
 | `_smoke` | 짧은 동작 확인용 | `A7N100_ref_FT_00_smoke` |
 
