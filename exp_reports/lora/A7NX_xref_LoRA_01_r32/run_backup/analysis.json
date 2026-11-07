@@ -1,0 +1,190 @@
+{
+ "run": "A7NX_xref_LoRA_01_r32",
+ "track": "lora",
+ "training_end": {
+  "step": 3000,
+  "time": "33:15",
+  "log": "A7NX_xref_LoRA_01_r32_20261106_073445.log"
+ },
+ "n_steps_saved": 12,
+ "n_complete": 12,
+ "n_resume_files": 1,
+ "export_failed": [],
+ "steps": [
+  {
+   "step": 250,
+   "complete": true,
+   "resume": false,
+   "resume_removed": false,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 500,
+   "complete": true,
+   "resume": true,
+   "resume_removed": true,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 750,
+   "complete": true,
+   "resume": false,
+   "resume_removed": false,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 1000,
+   "complete": true,
+   "resume": true,
+   "resume_removed": true,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 1250,
+   "complete": true,
+   "resume": false,
+   "resume_removed": false,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 1500,
+   "complete": true,
+   "resume": true,
+   "resume_removed": true,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 1750,
+   "complete": true,
+   "resume": false,
+   "resume_removed": false,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 2000,
+   "complete": true,
+   "resume": true,
+   "resume_removed": true,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 2250,
+   "complete": true,
+   "resume": false,
+   "resume_removed": false,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 2500,
+   "complete": true,
+   "resume": true,
+   "resume_removed": true,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 2750,
+   "complete": true,
+   "resume": false,
+   "resume_removed": false,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": false
+  },
+  {
+   "step": 3000,
+   "complete": true,
+   "resume": true,
+   "resume_removed": false,
+   "export_failed": false,
+   "exports": [
+    "export_lora"
+   ],
+   "has_state": true
+  }
+ ],
+ "merged_same_as_pre_backup": true,
+ "errors": [],
+ "n_warnings": 1,
+ "warnings": [
+  "A7NX_xref_LoRA_01_r32_20261106_073445.log: 07:34:49 W The tokenizer class you load from this checkpoint is not the same type as the class this function is called from. It may result in unexpected tokenization."
+ ],
+ "tb_last_step": 3000,
+ "best": {
+  "val/loss": {
+   "step": 2500,
+   "value": 0.7890527844429016,
+   "top5": [
+    2500,
+    2250,
+    3000,
+    2750,
+    1750
+   ]
+  },
+  "val_unseen/loss": {
+   "step": 500,
+   "value": 0.8071242570877075,
+   "top5": [
+    500,
+    1500,
+    1750,
+    2250,
+    2500
+   ]
+  },
+  "val_unseen/loss_diff": {
+   "step": 500,
+   "value": 0.8016178607940674,
+   "top5": [
+    500,
+    250,
+    750,
+    1000,
+    1250
+   ]
+  }
+ },
+ "wall_hours": 0.55
+}
