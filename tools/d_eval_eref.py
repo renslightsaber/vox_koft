@@ -48,7 +48,8 @@ RUN = {"LoRA01": "A7N_ref_LoRA_01_r32", "LoRA02iv2": "A7N_ref_LoRA_02_r32_iv2", 
        "A7NX": "A7NX_xref_LoRA_01_r32", "A7NX3": "A7NX3_xref_LoRA_01_r32",
        "X2R01": "A7NX2R_xref_LoRA_01_r32", "X2R02lr5e5": "A7NX2R_xref_LoRA_02_r32_lr5e5",
        "X2Rs01lr5e5": "A7NX2Rs_xref_LoRA_01_r32_lr5e5",
-       "X2Rs6lr5e5": "A7NX2Rs6_xref_LoRA_01_r32_lr5e5"}
+       "X2Rs6lr5e5": "A7NX2Rs6_xref_LoRA_01_r32_lr5e5",
+       "NUX2Rs6lr5e5": "A7NUX2Rs6_xref_LoRA_01_r32_lr5e5", "NUX2slr5e5": "A7NUX2s_xref_LoRA_01_r32_lr5e5"}
 REF_GROUPS = ["Happy", "Angry"]
 
 
@@ -218,7 +219,7 @@ def report(a):
     print("\n".join(md))
 
 
-PAGE_MODELS = ["LoRA01_s1500", "A7NX_s1500", "X2R01_s4500", "X2R02lr5e5_s4500"]
+PAGE_MODELS = ["LoRA01_s1500", "A7NX_s1500", "X2R01_s4500", "X2R02lr5e5_s4500", "X2Rs01lr5e5_s4500", "X2Rs6lr5e5_s4500"]  # 11/07 18시 X2Rs 두 판 추가
 PAGE_SPK = ["aihub_0028", "aihub_0012"]                          # 여 1 · 남 1 (CFG 시험 페이지와 같은 화자)
 PAGE_ROWS = [("Happy", "Neutrality"), ("Happy", "Sad-B"), ("Angry", "Neutrality"), ("Angry", "Happy-B")]   # (ref 묶음, 지시문 칸)
 

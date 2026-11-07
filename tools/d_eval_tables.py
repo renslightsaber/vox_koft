@@ -23,7 +23,9 @@ RUNS = [("FT_01", "FT01", "sft/A7N_ref_FT_01"), ("LoRA_01_r32", "LoRA01", "lora/
         ("A7NX_xref_LoRA_01", "A7NX", "lora/A7NX_xref_LoRA_01_r32"), ("A7NX3_xref_LoRA_01", "A7NX3", "lora/A7NX3_xref_LoRA_01_r32"),  # 2026-11-07
         ("A7NX2R_xref_LoRA_01", "X2R01", "lora/A7NX2R_xref_LoRA_01_r32"), ("A7NX2R_xref_LoRA_02_lr5e5", "X2R02lr5e5", "lora/A7NX2R_xref_LoRA_02_r32_lr5e5"),
         ("A7NX2Rs_xref_LoRA_01_lr5e5", "X2Rs01lr5e5", "lora/A7NX2Rs_xref_LoRA_01_r32_lr5e5"),
-        ("A7NX2Rs6_xref_LoRA_01_lr5e5", "X2Rs6lr5e5", "lora/A7NX2Rs6_xref_LoRA_01_r32_lr5e5")]
+        ("A7NX2Rs6_xref_LoRA_01_lr5e5", "X2Rs6lr5e5", "lora/A7NX2Rs6_xref_LoRA_01_r32_lr5e5"),
+        ("A7NUX2Rs6_xref_LoRA_01_lr5e5", "NUX2Rs6lr5e5", "lora/A7NUX2Rs6_xref_LoRA_01_r32_lr5e5"),  # 11/07 18:40
+        ("A7NUX2s_xref_LoRA_01_lr5e5", "NUX2slr5e5", "lora/A7NUX2s_xref_LoRA_01_r32_lr5e5")]
 CELLS = ["Neutrality", "Happy-A", "Happy-B", "Sad-A", "Sad-B", "Angry-A", "Angry-B"]
 KO = {"Neutrality": "중립", "Happy-A": "기쁨A", "Happy-B": "기쁨B", "Sad-A": "슬픔A", "Sad-B": "슬픔B", "Angry-A": "분노A", "Angry-B": "분노B"}
 OLD = D / "_backup_20261106_0955_before_neutral/summary.json"
