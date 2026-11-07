@@ -219,7 +219,8 @@ def report(a):
     print("\n".join(md))
 
 
-PAGE_MODELS = ["LoRA01_s1500", "A7NX_s1500", "X2R01_s4500", "X2R02lr5e5_s4500", "X2Rs01lr5e5_s4500", "X2Rs6lr5e5_s4500"]  # 11/07 18시 X2Rs 두 판 추가
+PAGE_MODELS = ["LoRA01_s1500", "A7NX_s1500", "X2R01_s4500", "X2R02lr5e5_s4500", "X2Rs01lr5e5_s4500", "X2Rs6lr5e5_s4500",
+               "NUX2Rs6lr5e5_s4500", "NUX2slr5e5_s4500"]  # 11/07 18시 X2Rs 두 판 · 21시 A7NU 두 판 추가
 PAGE_SPK = ["aihub_0028", "aihub_0012"]                          # 여 1 · 남 1 (CFG 시험 페이지와 같은 화자)
 PAGE_ROWS = [("Happy", "Neutrality"), ("Happy", "Sad-B"), ("Angry", "Neutrality"), ("Angry", "Happy-B")]   # (ref 묶음, 지시문 칸)
 
