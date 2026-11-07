@@ -447,11 +447,18 @@ def page(a):
         if (OUT / f).exists():
             h.append((OUT / f).read_text(encoding="utf-8"))
     h.append("<h2>① 목표 화자별 — 감정 7칸 × 2문장</h2>")
+    RC = json.load(open(OUT / "real_cells.json"))["cells"] if (OUT / "real_cells.json").exists() else {}   # tools/real_cells.py (2026-11-07)
+    if RC:
+        h.append("<p class=n>unseen8 화자 표에는 <b>진짜 사람 녹음</b> 열이 있습니다 — 그 사람이 실제로 그 칸 감정을 낸 녹음 1개(비교용 · 말투 · 문장 다름 · 없는 칸은 '없음'). "
+                 "고른 방법: tools/real_cells.py.</p>")
     for s_, v in P["spk"].items():
         xs = sorted([x for x in P["items"] if x["tgt"] == s_], key=lambda x: (EMO7.index(x["emo"]), x["id"]))
         h.append(f"<details><summary><b>{E(s_)}</b> ({'여' if v['gender'] == 'female' else '남'} · {v['src']}) — {len(xs)}문장</summary>")
         h.append(f"<p>목표 reference {A(cp(v['ref'], s_))} <span class=n>“{E(v['ref_text'])}”</span></p>")
-        h.append("<table><tr><th>칸</th><th>문장</th>" + "".join(f"<th>{E(t)}</th>" for t in T) + "</tr>")
+        rc = RC and v["src"] == "unseen8"
+        h.append("<table><tr><th>칸</th><th>문장</th>" + ("<th>진짜 사람 녹음<br><span class=n>(비교용 · 말투 · 문장 다름)</span></th>" if rc else "")
+                 + "".join(f"<th>{E(t)}</th>" for t in T) + "</tr>")
+        seen = set()
         for x in xs:
             i = x["id"]
             cells = []
@@ -463,7 +470,13 @@ def page(a):
                 num = (f"<div class='n num'>목표 {r['t_sim']:.2f} · {rk}{ek}<br>e2v {q['top']} · arousal {q['arousal']:.2f} · CER {100 * q['cer']:.0f}%"
                        + (f"<br>{qa['dur']:.1f}초 · {qa['sps']:.1f}음절/초{why}" if qa else "") + "</div>")
                 cells.append(f"<td>{A(f'wav/{t}/{i}.wav')}{num}{btn(f'{t}|{i}|v', ['목표', '애매', '다름'])}{btn(f'{t}|{i}|e', ['OK', '약함', '틀림'])}</td>")
-            h.append(f"<tr><td>{KO[x['emo']]}</td><td>{E(x['text'])}<div class=n>({E(first(instr.get(x['emo'], '')))})</div></td>{''.join(cells)}</tr>")
+            rcell = ""
+            if rc and x["emo"] not in seen:                                     # 칸마다 1개 — 그 칸 첫 줄에 rowspan
+                seen.add(x["emo"])
+                k = RC.get(f"{s_}|{x['emo']}")
+                n = sum(y["emo"] == x["emo"] for y in xs)
+                rcell = (f"<td rowspan={n}>" + (f"{A(k['file'])}<div class=n>“{E(k['text'])}”</div>" if k else "<span class=n>없음</span>") + "</td>")
+            h.append(f"<tr><td>{KO[x['emo']]}</td><td>{E(x['text'])}<div class=n>({E(first(instr.get(x['emo'], '')))})</div></td>{rcell}{''.join(cells)}</tr>")
         h.append("</table></details>")
     if (OUT / "page_vset.html").exists():                                       # ② 가상 화자 세트(tools/vspk.py)
         h.append((OUT / "page_vset.html").read_text(encoding="utf-8"))

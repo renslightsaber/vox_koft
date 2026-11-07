@@ -31,6 +31,13 @@
 | 가상 화자 일관성 | 같은 모델 · 같은 목표 화자의 중립 ↔ 감정이 서로 한 사람인가(세트 1위 · 감정끼리 · 천장 · 갈라짐) + REF 음향 | ✅ `tools/vspk.py`(2026-11-06) |
 | 표 | run 별 best 5 · 통합 상위 5 · 성공 기준 ✅/❌ · 일관성 순위 → 페이지 맨 위 | ✅ `tools/d_eval_tables.py`(2026-11-06) |
 | 여러 번 만들어 고르기 | seed N개 중 생성 중립에 가장 가까운 것(조건: CER · 이상 · 감정) + 진짜 녹음 문턱 · cfg/prompt 노브 → 청음 페이지 `bestofn/` | ✅ `tools/bestofn.py`(2026-11-06) |
+| 감정 ref 판 D 재측정 | unseen8 8명의 기쁨 · 분노 녹음을 ref 로 7칸 — 지시문 감정 · ref 감정 새어 나옴 · arousal 끌림 · 목소리(무감정 ref 판과 짝 비교) | ✅ `tools/d_eval_eref.py`(2026-11-07 · `page` = 작은 청음 페이지 8줄 × 모델 4) |
+| val_xref 다시 재기 | 저장된 ckpt 로 감정 ref 판 val loss(트레이너 검증과 같은 계산 · 잡음 seed 3개 평균) — 이전 run 비교 | ✅ `tools/val_xref_loss.py`(2026-11-07) |
+| 칸별 목소리 이동 | 생성 중립 2개 평균 ↔ 감정 칸 유사도(두 잣대) · 진짜 녹음 천장 | ✅ `tools/cell_drift.py`(2026-11-07) |
+| CFG 시험 | 다시 학습 없이 추론 cfg(2.0 · 2.5 · 3.0)만 바꿔 D 재측정 입력 224 채점 · 작은 청음 페이지(4칸 × 2명 × cfg 3 × step 2) | ✅ `tools/cfg_test.py`(2026-11-07) |
+| 감정 ↔ 목소리 그림 | run · step 별 (e2v 6칸, 목표 유사도) 점 · 선 · 원본 · CFG 점 · ±1 표준오차 → 맞바꿈 곡선을 넘었는가 | ✅ `tools/emo_voice_plot.py`(2026-11-07 · `--group 542|unseen8 --small` = 묶음별 작은 그림) |
+| 542 vs unseen8 나눠 보기 | D 재측정을 화자 묶음(542 8명 = 무감정 낭독만 · unseen8 8명 = 감정 녹음 있음) × A칸 · B칸으로 — e2v · arousal · 목표 유사도 · 1위 · CER · 이상 + 화자별 e2v | ✅ `tools/group_split.py`(2026-11-07) |
+| 진짜 사람 녹음 열 | D 재측정 청음 페이지 unseen8 표에 칸마다 진짜 감정 녹음 1개(비교용 · 말투 · 문장 다름) — q3_extra val_unseen8 → 없으면 71349 metadata(강도 1 → A · 3 → B · 투표 ≥ 4.5 · 2~10초) → 없음 · 평가 문장 · ref 녹음 제외 · seed 1986 | ✅ `tools/real_cells.py` → `d_eval/real_cells.json`(2026-11-07 · 35/56칸) |
 - 비교 규칙: 같은 문장 · 같은 ref · 같은 지시문 표 · cfg 2.0 · timesteps 10 · seed 1986/1987/1988 · **준비 합성 1회 뒤**.
 - 평가 화자: 처음 보는 화자 8명(`A7N/val_unseen8`) + 학습 화자 일부.
 
