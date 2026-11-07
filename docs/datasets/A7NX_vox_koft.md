@@ -89,3 +89,27 @@
 - 파일: `~/workspaces/preprocessed/vox_koft/A7NX2Rs6/` · 도구 `tools/make_a7nx2rs6.py` · 검사 7개 0
 - 자세한 설명: q3tts_koft `docs/datasets/A7NX_q3tts.md` §10 · 지시문 `_handoff/20261107_1530_prompt_a7nx2rs_x2_full.md`
 - 학습: vox_koft `A7NX2Rs6_xref_LoRA_01_r32_lr5e5`(설정은 A7NX2Rs 판과 데이터 경로만 다름) · 11/07 16:28 ~ 17:17 KST 학습 끝(Claude nohup · GPU 2,3)
+
+## 🆕 A7NU — 안 쓴 71349 화자에서 새 5목소리(11/07 18:38 · 사용자 결정 · q3tts 세션 작성)
+- 왜
+  - 542 를 줄여도(A7NX2Rs6) 542 화자 A칸 감정이 돌아오지 않았습니다([결과](../reports/20261107_A7NX2Rs_results.md)).
+  - 그래서 감정 녹음이 있는 화자를 늘리고, 542 있음/없음을 따로 가릅니다.
+- 고른 목소리(사용자 26명 말투 청음 · 페이지 `~/workspaces/tmp_listen/datasets/a71349_unused26/` · 판정 CSV `a71349_unused26_v1_판정.csv`)
+  - 애니체 4명: `aihub_0006_ani`(여아) · `aihub_0019_ani`(6~7세 남아) · `aihub_0030_ani`(할머니) · `aihub_0036_ani`(아줌마)
+  - 친절체 1명: `aihub_0019`
+  - 애니체 성우는 사람마다 배역이 하나뿐입니다. 그래서 "윗줄과 목소리가 다르다"는 메모는 감정 연기 때문으로 봅니다.
+    - 근거: 같은 화자 안 무감정 ↔ 감정 평균 목소리 유사도가 0.977~0.994 입니다(Qwen 화자 인코더). A7N 화자(중앙값 0.99 · 최저 0.971) 범위 안입니다.
+  - **강도 2 → B**: A7N 도 예전 대화체의 강도 2 를 B 로 둡니다. 이 5목소리는 강도 3 이 없어서 B칸이 모두 강도 2 입니다.
+  - 무감정 중 0019 애니체("딱딱함")와 0036 애니체("애매")는 정답에서 빼고 ref 로만 씁니다.
+  - ⚠️ 0019 친절체 분노A(93개)는 상담 대본이라 분노가 약할 수 있습니다(q3tts 세션 메모).
+- 새 행: 9,274행 · 정답 5,234개(화자 · 칸별 수는 `A7NUX2Rs6/dataset_info.json` counts.a7nu_by_speaker)
+- 두 데이터(A7N · 542 행 · val · val_xref 는 A7NX2Rs6 과 똑같음 · 검사 8개 모두 0 · vox 세션이 코드로 다시 확인)
+
+| 데이터 | 행 | 542 | 무감정 | run |
+|---|---|---|---|---|
+| `A7NUX2Rs6` | 206,570 | 5,941(2.9%) | 10.7% | `A7NUX2Rs6_xref_LoRA_01_r32_lr5e5` |
+| `A7NUX2s` | 200,629 | 0 | 8.05% | `A7NUX2s_xref_LoRA_01_r32_lr5e5` |
+
+- 파일: `~/workspaces/preprocessed/vox_koft/{A7NU, A7NUX2Rs6, A7NUX2s}/` · 도구 `tools/make_a7nux2rs6.py --n542 6 | 0`
+- 학습: 11/07 18:44 KST 부터 두 판 연속(Claude nohup · GPU 2,3 · 사용자 승인 18:38)
+- 자세한 설명: q3tts_koft `docs/datasets/aihub_71349_unused26.md` · 지시문 `_handoff/20261107_1840_prompt_a7nu_full.md`
