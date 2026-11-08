@@ -55,7 +55,7 @@ cd ~/workspaces/vox_koft && conda activate voxcpm && \
 ```
 - 완료 확인
   - `_COMPLETE` 9개 · 오류 0입니다.
-  - 재개용 파일은 step_4500 에만 있습니다(약 8.8GB). 정리는 사용자 승인 뒤에 합니다.
+  - 재개용 파일은 step_4500 에만 있었습니다(약 8.8GB). 사용자 승인(11/08 10:09) 뒤 지웠습니다 — run 10.03 → 0.65GB · 지우기 전후 같은 소리 · `_RESUME_REMOVED` 남김 · export_lora 9개 그대로.
   - 학습 뒤 백업: `exp_reports/lora/A7NUX2sN_xref_LoRA_01_r32_lr5e5/run_backup/` · `curves.png`
 
 ## 2. TensorBoard (참고)
@@ -166,4 +166,4 @@ cd ~/workspaces/vox_koft && conda activate voxcpm && \
 - 청음: A7NUX2sN s3000 의 542 화자 A칸이 A7NUX2Rs6 s3500 보다 감정이 살아 있는지, 목소리가 덜 닮게 들리는지 들어 주세요.
 - 숫자로는 **542 행을 빼고 무감정을 채운 sN 이 가장 고른 판**입니다. 다음 판의 기본 데이터로 삼을지 정해 주세요.
 - (선택) "무감정 ref → 무감정 정답" 모양 자체가 원인인지 가르는 판(§3-3).
-- 재개용 파일 정리(A7NUX2sN step_4500 · 약 8.8GB)는 승인 뒤에 합니다.
+- ~~재개용 파일 정리~~ → 11/08 10:09 승인 · 지움(위 §1).

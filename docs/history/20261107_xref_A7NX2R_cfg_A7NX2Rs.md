@@ -121,17 +121,17 @@
 | 16:xx | 사용자(청음) | CFG: "중간중간 목소리가 달라짐" → cfg 2.0 유지 |
 | 오후 | 사용자(청음) | 감정 ref 판 8줄 × 4모델 판정(위 §1-5) |
 | 18:38 | 사용자(청음 + 결정) | 새 5목소리 · Rs / Rs6 재개용 파일 삭제 · 다음 두 판(542 있음 / 없음) |
+| 11/08 10:09 | 사용자 | A7NUX2sN 재개용 파일 정리 승인 → 지움 |
 
-## 3. 남은 물음 (23:25 기준)
+## 3. 남은 물음 (11/08 10:09 기준)
 - A7NX2Rs6 s4500 · X2Rs01 s4000 을 X2R02 s4500 · A7NX3 s4500 · LoRA01 s1500 과 **청음으로** 비교(특히 542 화자 A칸 · 기쁨B) — 대기.
 - 원인: 542 유무 vs ref 개수 — (21:36) A7NUX2s 결과 542 를 빼면 542 A칸이 돌아와 **ref 개수보다 542 유무** 쪽. (23:25) A7NUX2sN 으로 무감정 비율 효과는 작다고 확인(+1.1%p). 남은 것: "542 화자" vs "무감정 ref → 무감정 정답 모양".
-- A7NUX2sN s3000 청음 판정 — 대기 · 재개용 파일(step_4500) 정리는 승인 뒤.
+- A7NUX2sN s3000 청음 판정 — 대기. (재개용 파일은 11/08 10:09 승인 · 지움)
 - A7NU 두 판(A7NUX2s s4500 · A7NUX2Rs6 s3500) 청음 판정 — 대기.
 - 11/06 부터 남은 것: best-of-N 규칙 · 가상 화자 D안 · 본 생성 규모(결정 기록 없음).
-- A7NU 두 판의 재개용 파일은 사용자 승인 뒤에 정리.
 
 ## 4. 링크
-- 인수인계(모두 [`_handoff/`](../../_handoff/)): `20261107_0145_handoff_main.md`(중간판) · `20261107_0350_handoff_main.md` · `20261107_1215_handoff_main.md` · `20261107_1718_handoff_main.md` · `20261107_1850_handoff_main.md` · `20261107_2136_handoff_main.md` · `20261107_2325_handoff_main.md`. 지시문 6개(`0035` · `1145` · `1530` · `1650` · `1840` · `2145` prompt)는 q3tts 세션 작성.
+- 인수인계(모두 [`_handoff/`](../../_handoff/)): `20261107_0145_handoff_main.md`(중간판) · `20261107_0350_handoff_main.md` · `20261107_1215_handoff_main.md` · `20261107_1718_handoff_main.md` · `20261107_1850_handoff_main.md` · `20261107_2136_handoff_main.md` · `20261107_2325_handoff_main.md` · `20261108_1009_handoff_main.md`. 지시문 6개(`0035` · `1145` · `1530` · `1650` · `1840` · `2145` prompt)는 q3tts 세션 작성.
 - 보고서: [A7NX · A7NX3](../reports/20261107_A7NX_A7NX3_results.md) · [A7NX2R](../reports/20261107_A7NX2R_results.md) · [CFG · 그림 · 감정 ref 판](../reports/20261107_cfg_test_emo_voice.md) · [A7NX2Rs · Rs6](../reports/20261107_A7NX2Rs_results.md) · [A7NU](../reports/20261107_A7NU_results.md) · [A7NUX2sN](../reports/20261107_A7NUX2sN_results.md)
 - 계획 [plan/20261106_xref_lora_runs.md](../plan/20261106_xref_lora_runs.md) §4 · 성공 기준 [plan/20261105_success_criteria_and_next_runs.md](../plan/20261105_success_criteria_and_next_runs.md) · 데이터 [A7NX_vox_koft.md](../datasets/A7NX_vox_koft.md) · 설명 [why_mix_542](../explanations/20261107_why_mix_542.md) · [opinion_A7NX2R_A7NX3](../explanations/20261107_opinion_A7NX2R_A7NX3.md)
 - q3tts 쪽(참고): `~/workspaces/q3tts_koft/docs/history/20261107_a7nx2r_sref_v4_night.md` · `~/workspaces/q3tts_koft/docs/datasets/A7NX_q3tts.md` · `~/workspaces/q3tts_koft/docs/reports/20261107_xvec_emotion_direction.md`(x-vector 감정 방향 실험, 15:15 승인 · 16:24 끝)
