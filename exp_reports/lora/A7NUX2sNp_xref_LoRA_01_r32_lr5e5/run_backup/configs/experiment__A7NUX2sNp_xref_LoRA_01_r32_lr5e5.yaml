@@ -1,0 +1,35 @@
+# A7NUX2sNp_xref_LoRA_01_r32_lr5e5 — B칸 고르기 판: A7NUX2sN 에서 분노B · 기쁨B 정답 중 너무 높은 음(+8반음 초과) · 갈라진 녹음만 뺌 (2026-11-09 · 지시문 q3tts 세션 09:30 §1 · 사용자 결정 09시)
+#   왜: 귀로 B칸 음질(기쁨B 삑사리 · 분노B 끝 갈라짐 · 너무 높은 음)이 남은 숙제 · 학습 문구(v3)로는 안 내려감 · 데이터 분노B 가 원래 +5.4반음
+#   데이터: A7NUX2sNp(tools/make_a7nux2snp.py build --clip_flat 4 --clip_plateau 10) · 192,608행 = A7NUX2sN 206,570 − 분노B 3,767 · 기쁨B 3,214 정답(행 13,962)
+#           ref 배정 · 다른 칸 · val_xref 그대로 · 빠진 행은 채우지 않음
+#   설정: A7NUX2sN_xref_LoRA_01_r32_lr5e5 복제 — 데이터 경로(train · val_xref) · run_name · 이 주석만 다름
+#   짝: A7NUX2sN(정답 행 빼기만 다름)
+#   실행: ./scripts/run.sh train lora --exp configs/experiments/lora/A7NUX2sNp_xref_LoRA_01_r32_lr5e5.yaml --hw rtxpro6000_2gpu --accel 2gpu_b
+#   실행(byobu): ./scripts/run.sh train lora --exp configs/experiments/lora/A7NUX2sNp_xref_LoRA_01_r32_lr5e5.yaml --hw rtxpro6000_2gpu --accel 2gpu_b
+logging:
+  run_name: A7NUX2sNp_xref_LoRA_01_r32_lr5e5
+data:
+  train_jsonl: A7NUX2sNp/train.jsonl
+  val_jsonl: A7N/val.jsonl
+  val_unseen_jsonl: A7N/val_unseen8/val.jsonl
+  val_unseen_pool_jsonl: A7N/val_unseen8/ref_pool.jsonl
+  val_xref_jsonl: A7NUX2sNp/val_xref.jsonl   # 감정 ref 판 val(192) → TB val_xref/*
+  ref:
+    pool_jsonl: A7N/ref_pool.jsonl
+  batch_size: 8                     # hw yaml(8) 대신 — 방식마다 메모리가 달라 실험에 둠
+optim:
+  lr: 5.0e-5
+  warmup_steps: 200
+train:
+  max_steps: 4500
+  grad_accum: 2
+  eval_every: 500
+  save_every: 500
+  keep_last: 9
+  resume: {enable: true, every: 500, keep: 1}
+media:
+  every: 500
+lora:
+  enable: true
+  r: 32
+  alpha: 32
