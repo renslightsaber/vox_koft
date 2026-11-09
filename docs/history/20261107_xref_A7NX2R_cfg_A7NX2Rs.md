@@ -1,7 +1,7 @@
 # 2026-11-07 — A7NX · A7NX3 평가 · A7NX2R · CFG 시험 · A7NX2Rs / Rs6 · A7NU 학습 시작
 
 > 📅 2026-11-07 (토) 00시 ~ 19시 · 처음 보는 사람용 · 날짜별 요약 기록(자세한 것은 링크) · 시각은 KST(서버 UTC + 9)
-> 앞: [20261106_A7N_4runs_eval_bestofn_xref.md](20261106_A7N_4runs_eval_bestofn_xref.md)
+> 앞: [20261106_A7N_4runs_eval_bestofn_xref.md](20261106_A7N_4runs_eval_bestofn_xref.md) · 다음: [20261109_overnight_iv3_sNn_cross_model.md](20261109_overnight_iv3_sNn_cross_model.md)
 > ⚠️ 숫자는 모두 **참고용**(자동 잣대)입니다. 품질 판정은 사용자 청음이 정본이고, 청음으로 판정한 항목은 "청음"이라고 따로 적었습니다.
 
 ---

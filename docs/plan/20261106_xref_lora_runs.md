@@ -92,3 +92,12 @@
     - 통합 점수 s3000 144.9(1위 수준) · best 5: 3000 · 4500 · 4000 · 1500 · 1000 · 청음 판정 대기.
   - 11/08 10:09: 사용자 승인으로 A7NUX2sN 재개용 파일(step_4500)을 지웠습니다(10.03 → 0.65GB · 같은 소리).
 
+- 11/08 23:25 지시문(q3tts 세션 · 사용자 승인 23:2x · 사용자 취침 · vox 세션이 학습까지 직접): [_handoff/20261108_2325_prompt_overnight_full.md](../../_handoff/20261108_2325_prompt_overnight_full.md)
+  - 학습 ① **A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3**(지시문 v3 · 분노B 문구만 "without shouting") — 23:29 ~ 00:22
+    - 결과: 분노B 가 내려가지 않음(s4000 +8.2반음 vs 지금 +7.9) → **재학습 불필요 · 서비스 문구로**(C2 +3.9반음 · angry 66%) — [보고서](../reports/20261109_A7NUX2sN_iv3_results.md)
+  - 학습 ② **A7NUX2sNn_xref_LoRA_01_r32_lr5e5**(추가 무감정 행의 ref 만 무감정 녹음) — 00:23 ~ 01:47
+    - 결과: 542 A칸 e2v 9 step 평균 39.6%(sN 41.0% · Rs6 31.7%) → 542 지름길의 단서는 **542 화자 자체** — [보고서](../reports/20261109_A7NUX2sNn_results.md)
+  - 조사: [모델 간 유사도](../reports/20261109_cross_model_similarity.md)(섞어도 목소리 거의 그대로 · A7NX3 빼기) · [분노B 정답 높이](../reports/20261109_angryB_pitch_in_data.md)(데이터 +5.4 · 모델 +7.9)
+  - TB 미리듣기(media)를 REF 있는 행으로 고침(새 run 부터) — [안내](../guides/tensorboard_groups.md)
+  - 재개용 파일은 지우지 않음(두 run 각 step_4500 · 사용자 승인 뒤) · git 커밋 · 푸쉬 안 함
+  - 11/09 10:13: 사용자 승인(09:30 지시문 §0)으로 두 run 의 재개용 파일(step_4500)을 지웠습니다(각 9.4GB → 624MB · `export_lora` · `_COMPLETE` 그대로 · `_RESUME_REMOVED` 표시).

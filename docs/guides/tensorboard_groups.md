@@ -59,6 +59,18 @@ ssh -N -o ServerAliveInterval=30 -o ExitOnForwardFailure=yes -L 6008:localhost:6
 - **Time Series 탭 설정(톱니)**: 버전에 따라 run 색 묶음 기능이 있으면 정규식 `^([^/]+)/` 로 학습 방식별 같은 색을 줄 수 있습니다.
 - 볼 곳: `train/loss_diff` · `train/loss_stop` · `val/*` · **`val_unseen/*`(처음 보는 화자 8명)** · `train/ref_frac` · `media/pred_audio_*`(500 step 마다 합성).
 
+### ⚠️ media 소리(미리듣기) — 11/08 이전 run 은 목소리 비교에 쓰지 마세요
+- **11/08 이전 run**(A7NUX2sN_xref_LoRA_01 까지 전부)의 `media/pred_audio_*` 는 **REF 없이 만든 소리**입니다.
+  - 문장이 `A7N/val.jsonl` 처음 2줄(466 화자 `a466_0001`)이었는데, 그 화자가 무감정 ref 풀에 없어서 REF 가 붙지 않았습니다.
+  - VoxCPM2 는 REF 가 없으면 아무 목소리나 만들기 때문에, `pred_audio` 가 `target_audio` 와 **성별까지 다를 수 있습니다**.
+  - **학습 자체는 정상입니다**(xref 학습 행은 100% 고정 ref 를 가짐). 미리듣기만 잘못 만들어진 것입니다. 지난 run 의 media 는 다시 만들지 않았습니다.
+- **11/09 부터**(A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3 · A7NUX2sNn_xref_LoRA_01 부터) 미리듣기 3줄은 REF 가 확실히 있는 행입니다.
+  - `val_xref` 처음 2행(행에 고정 ref) + `val_unseen` 1행(풀 ref). `val_xref` 가 없는 설정이면 val 에서 풀 ref 가 있는 행만 씁니다.
+  - 캡션 끝에 `REF <utt> (<화자> · <칸>) | <출처>` 가 붙고, REF 소리는 `media/ref_audio_{i}` 로 처음 한 번 기록됩니다 → TB 에서 REF 와 나란히 들어 보세요.
+  - smoke 때 확인(WavLM 코사인): 세 줄 모두 REF 와 같은 성별이고, pred↔REF 0.53~0.72 로 같은 화자 진짜 녹음끼리(REF↔정답 0.52~0.83)와 같은 수준이었습니다.
+  - 실제 학습(A7NUX2sN iv3 · TB 에 기록된 소리) step 4500: pred↔REF 0.65 · 0.66 · 0.75(WavLM). 예전 run(A7NUX2sN_01) 의 media 는 pred↔정답 0.14 · 0.30 으로 다른 사람이었습니다.
+  - 코드: `voxko/sft/trainer.py` `media_rows()` · `voxko/common/trainer_base.py` `log_media()` · smoke 는 이제 media 문장 전부를 합성해 `<run>/_smoke/` 에 REF 와 함께 저장합니다.
+
 ## 3-1. 새 규칙 (2026-11-06 · q3tts_koft 와 같음)
 - `scripts/run.sh` 는 학습을 시작할 때 **그룹 경로를 알려 주고**(`tensorboard: ./scripts/tb.sh → 그룹 runs_grouped/FT/A7N/<run>`), 약 2분 30초 뒤 기록 폴더가 생기면 **그룹 트리에 자동으로 연결**합니다(tb.sh 를 안 띄워도 됨).
   - ⏳ 이 run.sh 는 `scripts/run.sh.next` 로 준비해 두었습니다. **지금 돌고 있는 4개 연속 학습이 끝난 뒤 교체**합니다(돌고 있는 셸이 읽는 파일이라서).
