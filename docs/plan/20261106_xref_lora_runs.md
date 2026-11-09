@@ -101,3 +101,11 @@
   - TB 미리듣기(media)를 REF 있는 행으로 고침(새 run 부터) — [안내](../guides/tensorboard_groups.md)
   - 재개용 파일은 지우지 않음(두 run 각 step_4500 · 사용자 승인 뒤) · git 커밋 · 푸쉬 안 함
   - 11/09 10:13: 사용자 승인(09:30 지시문 §0)으로 두 run 의 재개용 파일(step_4500)을 지웠습니다(각 9.4GB → 624MB · `export_lora` · `_COMPLETE` 그대로 · `_RESUME_REMOVED` 표시).
+
+- 11/09 09:30 지시문(q3tts 세션 · 사용자 결정 09시): [_handoff/20261109_0930_prompt_bcell_ref_study_full.md](../../_handoff/20261109_0930_prompt_bcell_ref_study_full.md)
+  - §0: 재개용 파일 정리(위) · 0220 까지의 작업 7개 커밋 · 두 곳 푸쉬(17b9b9b)
+  - 학습 **A7NUX2sNp_xref_LoRA_01_r32_lr5e5**(B칸 고르기 판 · 분노B · 기쁨B 의 +8반음 초과 · 갈라진 정답 6,981개 뺌) — 10:22 ~ 11:19
+    - 결과: 분노B +8.2 → +7.0 · 기쁨B +5.7 → +4.8반음(9 step 평균) · 세기 그대로 · 통합 9 step 평균 141.0(sN 140.2) · **s4000 146.2 전체 1위** · 모델은 여전히 데이터보다 약 +3반음 — [보고서](../reports/20261109_A7NUX2sNp_results.md)
+  - 기쁨A 조사: 정답 녹음은 기쁘게 들림(무감정처럼 3.5% · 기준 30%) → **§5(A7NUX2sNph) 안 함** · 약한 쪽은 모델(arousal 이 중립 출력과 같음) — [보고서](../reports/20261109_happyA_data_check.md)
+  - REF 유사도 조사: 같은 칸 진짜 녹음 대비 사람 천장의 약 70% · 분노A 쌍이 사람보다 많이 멀어짐 · 기쁨A 후보는 X2Rs6 s2500 이 숫자로 가장 안전 — [보고서](../reports/20261109_ref_similarity_by_cell.md) · 청음 12줄
+  - 새 run 재개용 파일은 지우지 않음 · §1~§6 은 커밋 안 함(사용자 요청 시)

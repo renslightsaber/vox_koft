@@ -1,7 +1,7 @@
 # 2026-11-08 ~ 09 — 청음 페이지 · 밤사이: 모델 간 유사도 · 분노B 높이 · iv3 · A7NUX2sNn
 
 > 📅 2026-11-08 (일) 10시 ~ 11-09 (월) 02:20 · 처음 보는 사람용 · 날짜별 요약 기록(자세한 것은 링크) · 시각은 KST(서버 UTC + 9)
-> 앞: [20261107_xref_A7NX2R_cfg_A7NX2Rs.md](20261107_xref_A7NX2R_cfg_A7NX2Rs.md)
+> 앞: [20261107_xref_A7NX2R_cfg_A7NX2Rs.md](20261107_xref_A7NX2R_cfg_A7NX2Rs.md) · 다음: [20261109_bcell_happyA_refsim.md](20261109_bcell_happyA_refsim.md)
 > ⚠️ 숫자는 모두 **참고용**(자동 잣대)입니다. 품질 판정은 사용자 청음이 정본입니다.
 
 ---
