@@ -35,7 +35,8 @@ SHORT = {"A7N_ref_FT_01": "FT01", "A7N_ref_LoRA_01_r32": "LoRA01", "A7N_ref_FT_0
          "A7NX2Rs6_xref_LoRA_01_r32_lr5e5": "X2Rs6lr5e5",
          "A7NUX2Rs6_xref_LoRA_01_r32_lr5e5": "NUX2Rs6lr5e5", "A7NUX2s_xref_LoRA_01_r32_lr5e5": "NUX2slr5e5",
          "A7NUX2sN_xref_LoRA_01_r32_lr5e5": "NUX2sNlr5e5",  # 11/07 18:40 · 21:45
-         "A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3": "NUX2sNiv3lr5e5", "A7NUX2sNn_xref_LoRA_01_r32_lr5e5": "NUX2sNnlr5e5"}  # 11/09 (iv3 는 v3 문구로 잼 · v1 문구 참고는 --short NUX2sNiv3v1)
+         "A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3": "NUX2sNiv3lr5e5", "A7NUX2sNn_xref_LoRA_01_r32_lr5e5": "NUX2sNnlr5e5",
+         "A7NUX2sNp_xref_LoRA_01_r32_lr5e5": "NUX2sNplr5e5"}  # 11/09 (iv3 는 v3 문구로 잼 · v1 문구 참고는 --short NUX2sNiv3v1)
 DE = str(ROOT / "voxko/eval/d_eval.py")
 
 

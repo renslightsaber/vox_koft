@@ -28,7 +28,8 @@ RUNS = [("FT_01", "FT01", "sft/A7N_ref_FT_01"), ("LoRA_01_r32", "LoRA01", "lora/
         ("A7NUX2s_xref_LoRA_01_lr5e5", "NUX2slr5e5", "lora/A7NUX2s_xref_LoRA_01_r32_lr5e5"),
         ("A7NUX2sN_xref_LoRA_01_lr5e5", "NUX2sNlr5e5", "lora/A7NUX2sN_xref_LoRA_01_r32_lr5e5"),
         ("A7NUX2sN_xref_LoRA_02_lr5e5_iv3", "NUX2sNiv3lr5e5", "lora/A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3"),   # 11/09 · v3 문구로 잼
-        ("A7NUX2sNn_xref_LoRA_01_lr5e5", "NUX2sNnlr5e5", "lora/A7NUX2sNn_xref_LoRA_01_r32_lr5e5")]
+        ("A7NUX2sNn_xref_LoRA_01_lr5e5", "NUX2sNnlr5e5", "lora/A7NUX2sNn_xref_LoRA_01_r32_lr5e5"),
+        ("A7NUX2sNp_xref_LoRA_01_lr5e5", "NUX2sNplr5e5", "lora/A7NUX2sNp_xref_LoRA_01_r32_lr5e5")]
 CELLS = ["Neutrality", "Happy-A", "Happy-B", "Sad-A", "Sad-B", "Angry-A", "Angry-B"]
 KO = {"Neutrality": "중립", "Happy-A": "기쁨A", "Happy-B": "기쁨B", "Sad-A": "슬픔A", "Sad-B": "슬픔B", "Angry-A": "분노A", "Angry-B": "분노B"}
 OLD = D / "_backup_20261106_0955_before_neutral/summary.json"

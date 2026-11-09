@@ -64,6 +64,7 @@ B_WHY = {"NUX2sNlr5e5_s3000": "통합 1위 · 감정 고른 판(542 지름길 �
 RUN = {"NUX2sNlr5e5": ("A7NUX2sN_xref_LoRA_01_r32_lr5e5", "A7NUX2sN — 542 0 · 무감정 10.69% 로 채움 · 다른 칸 ref · 새 5목소리 · LoRA lr 5e-5"),
        "NUX2sNiv3lr5e5": ("A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3", "A7NUX2sN iv3 — A7NUX2sN 과 같고 지시문 v3(분노B 문구에서 shouting · loud 뺌 · 합성도 v3 문구) · 11/09"),
        "NUX2sNnlr5e5": ("A7NUX2sNn_xref_LoRA_01_r32_lr5e5", "A7NUX2sNn — A7NUX2sN 과 같고 추가 무감정 행 ref 만 같은 화자 무감정 녹음 · 11/09"),
+       "NUX2sNplr5e5": ("A7NUX2sNp_xref_LoRA_01_r32_lr5e5", "A7NUX2sNp — A7NUX2sN 에서 분노B · 기쁨B 의 너무 높은 음(+8반음 초과) · 갈라진 정답만 뺌 · 11/09"),
        "X2Rs6lr5e5": ("A7NX2Rs6_xref_LoRA_01_r32_lr5e5", "A7NX2Rs6 — 다른 칸 ref · 542 3.0%(화자당 6문장) · 무감정 ref 1개 · LoRA lr 5e-5"),
        "NUX2slr5e5": ("A7NUX2s_xref_LoRA_01_r32_lr5e5", "A7NUX2s — A7NUX2Rs6 에서 542 0(무감정 8.1%) · LoRA lr 5e-5"),
        "A7NX3": ("A7NX3_xref_LoRA_01_r32", "A7NX3 — 정답마다 같은 사람 다른 칸 ref 3개 · LoRA lr 1e-4"),
@@ -76,6 +77,9 @@ RUN = {"NUX2sNlr5e5": ("A7NUX2sN_xref_LoRA_01_r32_lr5e5", "A7NUX2sN — 542 0 ·
        "A7NX": ("A7NX_xref_LoRA_01_r32", "A7NX — 정답마다 같은 사람 다른 칸 ref 1개 · LoRA lr 1e-4"),
        "LoRA02iv2": ("A7N_ref_LoRA_02_r32_iv2", "LoRA_02 iv2 — 지시문 v2(감정마다 4문구) · ref 0.5 · LoRA r32"),
        "FT02iv2": ("A7N_ref_FT_02_iv2", "FT_02 iv2 — 지시문 v2(감정마다 4문구) · ref 0.5 · 전체 FT")}
+# run 페이지 맨 앞에 둘 비교 열(11/08 B 페이지 음원 재사용) · 기본 보기 "전체"(11/09 09:30 지시문 §2 · 이전 run 페이지는 그대로)
+LEAD = {"NUX2sNplr5e5": ["NUX2sNlr5e5_s3000"]}
+VIEW_ALL = {"NUX2sNplr5e5"}
 REPRO_ROW = "Angry-B_0"                       # 재현 확인에 쓰는 d_eval 문항(화자는 모델마다 돌려 씀)
 
 
@@ -241,7 +245,7 @@ def head_stats(S, P, t):
     return dict(score=m["score"], t_sim=m["t_sim"], top1=m.get("fair_top1", m["top1"]), e2v=m["emo_hit"], a542=hitA("542"), aun=hitA("unseen8"))
 
 
-def render(name, key, models, labels, out: Path, intro: str, csvname: str):
+def render(name, key, models, labels, out: Path, intro: str, csvname: str, view: str = "Neutrality"):
     """models = 이름표 목록(열 순서) · labels[t] = 열 머리 html."""
     E = html.escape
     St, P, S = jl(SET / "set.json"), jl(D / "plan.json"), jl(D / "summary.json")["models"]
@@ -255,8 +259,8 @@ def render(name, key, models, labels, out: Path, intro: str, csvname: str):
         return "<div class=b data-id='%s'>%s</div>" % (E(i), "".join(f"<button data-v='{o}'>{o}</button>" for o in opts))
     h = [f"<!doctype html><meta charset=utf-8><title>{E(name)}</title><style>{CSS}</style>",
          "<div id=bar>판정 <span id=cnt>0</span>개 · 보이는 줄 <span id=shown>0</span> · 칸 <select id=fc>"
-         + "".join(f"<option value='{c}'{' selected' if c == 'Neutrality' else ''}>{DE.KO[c]}</option>" for c in CELLS)
-         + "<option value=all>전체</option></select> · 묶음 <select id=fg><option value=all>전체</option><option value=542>542</option><option value=unseen8>unseen8</option></select>"
+         + "".join(f"<option value='{c}'{' selected' if c == view else ''}>{DE.KO[c]}</option>" for c in CELLS)
+         + f"<option value=all{' selected' if view == 'all' else ''}>전체</option></select> · 묶음 <select id=fg><option value=all>전체</option><option value=542>542</option><option value=unseen8>unseen8</option></select>"
          " · <button onclick='dl()'>CSV 내려받기</button> · <label><input type=checkbox onchange=\"document.body.classList.toggle('hidenum',this.checked)\"> 숫자 숨기기(귀 먼저)</label>"
          " · <button onclick=\"if(confirm('이 페이지의 판정 · 메모를 모두 지울까요?')){localStorage.removeItem(PAGE.key);location.reload()}\">판정 지우기</button></div>",
          intro]
@@ -329,15 +333,17 @@ def cmd_page(a):
            "<p class=n>run 마다 한 페이지 · 열 = 그 run 의 D 재측정 통합 점수 상위 step(기본 3개 · 4위가 1위와 2점 안이면 4개). 1위 점수 순. 세트는 B 와 같습니다(6명 × 9줄).</p>",
            "<table><tr><th>순</th><th>run</th><th>설명</th><th>열(점수)</th><th>페이지</th></tr>"]
     for i, (run, cols) in enumerate(St["C"].items(), 1):
-        tags = [t for t, _ in cols]
+        lead = [t for t in LEAD.get(run, []) if t not in {x for x, _ in cols}]
+        tags = lead + [t for t, _ in cols]
         miss = [t for t in tags if not ready(t)]
         lb = {t: label(S, P, t, f"{k}위 s{t.rsplit('_s', 1)[1]} · {sc:.1f}<br>") for k, (t, sc) in enumerate(cols, 1)}
+        lb.update({t: label(S, P, t, "비교 · ") for t in lead})
         f = RUNS / f"{run}.html"
         if not only or run in only:
           f = render(f"C · {run}", f"run_{run}_judg", tags, lb, RUNS / f"{run}.html",
-                   f"<h1>🎧 {E(run)} — {E(RUN[run][1])}</h1><p class=n>ckpt {E(RUN[run][0])} · 열 = 통합 점수 상위 {len(tags)}개 · "
+                   f"<h1>🎧 {E(run)} — {E(RUN[run][1])}</h1><p class=n>ckpt {E(RUN[run][0])} · 열 = 통합 점수 상위 {len(cols)}개" + (f" (맨 앞 {', '.join(lead)} = 비교용 · B 페이지 음원)" if lead else "") + " · "
                    f"<a href='index.html'>목차</a> · <a href='../listen_cmp/index.html'>B 비교</a></p>{guide}" + (f"<p>⚠️ 아직 준비 안 된 열: {miss}</p>" if miss else ""),
-                   f"vox_koft_run_{run}.csv")
+                   f"vox_koft_run_{run}.csv", view="all" if run in VIEW_ALL else "Neutrality")
         colstr = " · ".join(f"s{t.rsplit('_s', 1)[1]} {sc:.1f}" for t, sc in cols)
         idx.append(f"<tr><td>{i}</td><td><b>{E(run)}</b></td><td>{E(RUN[run][1])}</td><td>{colstr}</td>"
                    f"<td><a href='{f.name}'>열기</a>{' ⚠️' if miss else ''}</td></tr>")
