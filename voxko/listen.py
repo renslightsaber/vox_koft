@@ -43,6 +43,19 @@ def run_info(run: str) -> dict:
             "batch": f"{d['batch_size']} × accum {m['train']['grad_accum']} × GPU {m['hardware']['expected_num_processes']}"}
 
 
+def run_emap(run: str) -> Path:
+    """run 의 merged.yaml 에 적힌 지시문 표(없으면 v1)."""
+    try:
+        import yaml
+        f = OUT / "ckpt" / run / "configs/merged.yaml"
+        m = yaml.safe_load("\n".join(l for l in open(f, encoding="utf-8") if not l.startswith("#")))
+        p = Path(m["data"]["emotion"]["map_file"])
+        p = p if p.is_absolute() else H / "vox_koft" / p
+        return p if p.is_file() else EMAP
+    except Exception:  # noqa: BLE001
+        return EMAP
+
+
 def steps(run: str) -> List[int]:
     return sorted(int(p.name.split("_")[1]) for p in (OUT / "ckpt" / run).glob("step_*") if (p / "_COMPLETE").exists())
 
@@ -106,6 +119,7 @@ class Listener:
     def __init__(self, run: str, seed: int = 1986, cfg_value: float = 2.0, timesteps: int = 10, max_len: int = 600):
         self.run, self.seed, self.cfg, self.ts, self.max_len = run, seed, cfg_value, timesteps, max_len
         self._eng = {}
+        self.emap = run_emap(run)                       # 2026-11-09: run 이 학습한 지시문 표로 합성(v3 run 이면 v3 · 원본 열도 같은 문구)
 
     def engine(self, step: Optional[int]):
         from voxko.engine.synth import Engine
@@ -116,7 +130,7 @@ class Listener:
             import torch
             torch.cuda.empty_cache()
             path = BASE if step is None else export_dir(self.run, int(step))
-            self._eng[key] = Engine(str(path), emotion_map=str(EMAP))     # 준비 합성 포함
+            self._eng[key] = Engine(str(path), emotion_map=str(self.emap))   # 준비 합성 포함
         return self._eng[key]
 
     def synth(self, step, text: str, emotion: Optional[str] = None, ref: Optional[dict] = None, seed: Optional[int] = None,

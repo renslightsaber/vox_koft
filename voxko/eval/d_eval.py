@@ -49,6 +49,7 @@ OUT = Path(os.environ.get("VOX_D_EVAL_OUT", H / "tmp_listen/vox_koft/d_eval"))
 V542 = H / "preprocessed/q3tts_koft/542/val_unseen542"
 VD = H / "preprocessed/vox_koft/A7N"
 EMAP = H / "vox_koft/configs/emotion/a7n_vox_v1.yaml"
+ROOTD = H / "vox_koft"
 EMO6 = ["Happy-A", "Happy-B", "Sad-A", "Sad-B", "Angry-A", "Angry-B"]
 EMO7 = ["Neutrality"] + EMO6                                                  # 2026-11-06 중립 칸 추가
 KO = {"Neutrality": "중립", "Happy-A": "기쁨 A(약)", "Happy-B": "기쁨 B(강)", "Sad-A": "슬픔 A(약)", "Sad-B": "슬픔 B(강)", "Angry-A": "분노 A(약)", "Angry-B": "분노 B(강)"}
@@ -153,7 +154,8 @@ def vox(a):
     P = json.load(open(PLANF))
     W = WAVD / a.tag
     W.mkdir(parents=True, exist_ok=True)
-    eng = Engine(os.path.expanduser(a.model), emotion_map=str(EMAP))          # 준비 합성 포함
+    emap = str(ROOTD / a.emotion_map) if a.emotion_map else str(EMAP)       # 2026-11-09: 지시문 표를 바꿔 잴 수 있게(기본 v1)
+    eng = Engine(os.path.expanduser(a.model), emotion_map=emap)                # 준비 합성 포함
     ml = int(a.max_len)                                                       # 생성 최대 patch(0.16초) — 닿으면 "안 끝나는 합성"
     t0, tot, dur = time.time(), 0.0, {}
     chk = P["items"][5]
@@ -172,6 +174,7 @@ def vox(a):
     w1 = sf.read(W / f"{x['id']}.wav")[0]
     rep = len(w1) == len(w2) and float(np.abs(w1 - w2).max()) < 1e-3
     meta = dict(tag=a.tag, model=os.path.expanduser(a.model), kind=eng.kind, repro=bool(rep), repro_id=x["id"], n=len(P["items"]), max_len=ml,
+                emotion_map=Path(emap).name,
                 rtf=(time.time() - t0) / max(tot, 1e-9) if tot else None, time_utc=time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
     json.dump(meta, open(OUT / f"{PFX}vox_{a.tag}.json", "w"), indent=1)
     print(json.dumps(meta, ensure_ascii=False))
@@ -520,6 +523,7 @@ def main():
     ap.add_argument("--tag", help="vox: 모델 이름표(예: base · FT01_s3000)")
     ap.add_argument("--model", help="vox: 원본 · export_ft · export_lora 폴더")
     ap.add_argument("--tags", nargs="*", help="sv · ser · quality: 이 이름표만(기본: wav/ 아래 전부)")
+    ap.add_argument("--emotion_map", default=None, help="vox: 지시문 표(저장소 기준 경로 · 기본 configs/emotion/a7n_vox_v1.yaml)")
     ap.add_argument("--max_len", type=int, default=600, help="vox: 생성 최대 patch(0.16초 · 600 = 96초) — 닿으면 '안 끝나는 합성'")
     ap.add_argument("--force", action="store_true", help="sv · ser · quality: 이미 있어도 다시 계산")
     ap.add_argument("--device", default="cuda", help="quality: cuda | cpu")

@@ -25,7 +25,8 @@ SHORT = {"A7N_ref_FT_01": "FT01", "A7N_ref_LoRA_01_r32": "LoRA01", "A7N_ref_FT_0
          "A7NX2Rs_xref_LoRA_01_r32_lr5e5": "X2Rs01lr5e5",
          "A7NX2Rs6_xref_LoRA_01_r32_lr5e5": "X2Rs6lr5e5",
          "A7NUX2Rs6_xref_LoRA_01_r32_lr5e5": "NUX2Rs6lr5e5", "A7NUX2s_xref_LoRA_01_r32_lr5e5": "NUX2slr5e5",
-         "A7NUX2sN_xref_LoRA_01_r32_lr5e5": "NUX2sNlr5e5"}  # 11/07 18:40 · 21:45
+         "A7NUX2sN_xref_LoRA_01_r32_lr5e5": "NUX2sNlr5e5",  # 11/07 18:40 · 21:45
+         "A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3": "NUX2sNiv3lr5e5", "A7NUX2sNn_xref_LoRA_01_r32_lr5e5": "NUX2sNnlr5e5"}  # 11/09
 
 
 def best_info(run: str) -> dict:
@@ -68,17 +69,20 @@ def build(run: str, force: bool, out_dir: Path | None = None) -> Path:
     nb.metadata["kernelspec"] = {"display_name": "Python (voxcpm)", "language": "python", "name": "voxcpm"}
     md, code = nbf.v4.new_markdown_cell, nbf.v4.new_code_cell
     best_comment = "\n".join(f"#   · {l}" for l in bi["lines"])
+    sys.path.insert(0, str(ROOT))
+    from voxko.listen import run_emap
+    emap = run_emap(run).name                                         # 2026-11-09: run 이 학습한 표(v3 run 이면 v3)
     nb.cells = [
         md(f"""# 🎧 {run} 청음 — VoxCPM2 한국어 감정 FT
 
-- 입력 규칙(D 재측정과 같음): **`(v1 지시문)문장` + 처음 보는 목표 화자의 무감정 reference** · prompt 없음 · 준비 합성 뒤 · seed 고정
+- 입력 규칙(D 재측정과 같음): **`(지시문)문장`(표 {emap}) + 처음 보는 목표 화자의 무감정 reference** · prompt 없음 · 준비 합성 뒤 · seed 고정
 - 무엇을 들을까: ① **목소리가 reference 와 같은 사람인가**(끝까지) ② **칸의 감정이 원본보다 분명한가**(A = 약 · B = 강) ③ 끊김 · 늘어짐 · 끝 잘림 · 발음
 - 숫자(D 재측정 · TB)는 **참고용** — 귀가 정본. 비교 페이지: http://127.0.0.1:8765/vox_koft/d_eval/index.html
 - 실행 순서: 1 → 2 → 3(ref) → 4(상위 5 step × 7칸) → `PICK_STEP` 고른 뒤 5 · 6 · 7"""),
         md("## 1. 환경"),
         code(f"""import os, sys
 # ⚙️ GPU — 청음은 몇 GB 만 씀. 학습 중인 GPU 와 같이 써도 되지만 비어 있는 GPU 를 먼저.
-os.environ.setdefault('CUDA_VISIBLE_DEVICES', '2')
+os.environ.setdefault('CUDA_VISIBLE_DEVICES', '1')   # 사용자 노트북 GPU(2026-11-09 규칙: 첫 셀 GPU 1)
 sys.path.insert(0, os.path.expanduser('~/workspaces/vox_koft'))
 from voxko import listen
 RUN_NAME = '{run}'

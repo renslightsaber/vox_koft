@@ -34,7 +34,8 @@ SHORT = {"A7N_ref_FT_01": "FT01", "A7N_ref_LoRA_01_r32": "LoRA01", "A7N_ref_FT_0
          "A7NX2Rs_xref_LoRA_01_r32_lr5e5": "X2Rs01lr5e5",
          "A7NX2Rs6_xref_LoRA_01_r32_lr5e5": "X2Rs6lr5e5",
          "A7NUX2Rs6_xref_LoRA_01_r32_lr5e5": "NUX2Rs6lr5e5", "A7NUX2s_xref_LoRA_01_r32_lr5e5": "NUX2slr5e5",
-         "A7NUX2sN_xref_LoRA_01_r32_lr5e5": "NUX2sNlr5e5"}  # 11/07 18:40 · 21:45
+         "A7NUX2sN_xref_LoRA_01_r32_lr5e5": "NUX2sNlr5e5",  # 11/07 18:40 · 21:45
+         "A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3": "NUX2sNiv3lr5e5", "A7NUX2sNn_xref_LoRA_01_r32_lr5e5": "NUX2sNnlr5e5"}  # 11/09 (iv3 는 v3 문구로 잼 · v1 문구 참고는 --short NUX2sNiv3v1)
 DE = str(ROOT / "voxko/eval/d_eval.py")
 
 
@@ -96,6 +97,8 @@ def main():
     ap.add_argument("--dry", action="store_true")
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--only", choices=["vox", "score", "page"], default=None)
+    ap.add_argument("--emotion_map", default=None, help="합성 지시문 표(기본 v1) — 예: configs/emotion/a7n_vox_v3.yaml")
+    ap.add_argument("--short", default=None, help="이름표 앞부분을 이것으로(run 1개일 때 · 예: NUX2sNiv3v1 = 같은 ckpt 를 v1 문구로)")
     a = ap.parse_args()
     busy = gpus_busy(a.gpus)
     if busy and not a.force:
@@ -111,7 +114,7 @@ def main():
             if e is None:
                 log(f"⚠️ {r} step {s}: export 없음(건너뜀)")
                 continue
-            jobs.append((f"{SHORT.get(r, r)}_s{s}", e))
+            jobs.append((f"{(a.short if a.short else SHORT.get(r, r))}_s{s}", e))
         log(f"{r}: 평가 step {sorted(st)} (TB val_unseen 최저 {b})")
     tags = [t for t, _ in jobs]
     (D / "eval_runs_plan.json").write_text(json.dumps({"runs": a.runs, "jobs": [[t, str(m)] for t, m in jobs]}, indent=1))
@@ -125,7 +128,7 @@ def main():
         by = {g: [] for g in G}
         todo = [(t, m) for t, m in jobs if not (D / f"vox_{t}.json").exists()]
         for k, (t, m) in enumerate(todo):
-            by[G[k % len(G)]].append([ENV["vox"], DE, "vox", "--tag", t, "--model", m])
+            by[G[k % len(G)]].append([ENV["vox"], DE, "vox", "--tag", t, "--model", m] + (["--emotion_map", a.emotion_map] if a.emotion_map else []))
         log(f"1) 합성 {len(todo)}개 → GPU {G}")
         run_parallel(by, L, "vox")
     if a.only in (None, "score"):
@@ -144,7 +147,7 @@ def main():
         summ = json.load(open(D / "summary.json"))["models"]
         pt = ["base"]
         for r in a.runs:
-            pre = SHORT.get(r, r) + "_s"
+            pre = (a.short if a.short else SHORT.get(r, r)) + "_s"
             c = [t for t in summ if t.startswith(pre)]
             if c:
                 pt.append(max(c, key=lambda t: summ[t]["전체"]["score"]))

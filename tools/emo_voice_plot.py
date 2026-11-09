@@ -30,7 +30,8 @@ SERIES = [("LoRA01", "LoRA_01 (A7N, neutral ref)", "#2a78d6"), ("A7NX", "A7NX (o
           ("X2R02lr5e5", "A7NX2R lr 5e-5", "#e87ba4"), ("X2Rs01lr5e5", "A7NX2Rs lr 5e-5 (542 5.8%)", "#008300"),
           ("X2Rs6lr5e5", "A7NX2Rs6 lr 5e-5 (542 3.0%)", "#6250d6"),
           ("NUX2Rs6lr5e5", "A7NUX2Rs6 (+5 voices, 542 2.9%)", "#9a5b13"), ("NUX2slr5e5", "A7NUX2s (+5 voices, no 542)", "#0f9fb8"),
-          ("NUX2sNlr5e5", "A7NUX2sN (no 542, neutral refilled)", "#d6274d")]
+          ("NUX2sNlr5e5", "A7NUX2sN (no 542, neutral refilled)", "#d6274d"),
+          ("NUX2sNiv3lr5e5", "A7NUX2sN iv3 (Angry-B phrase v3)", "#4d4d4d"), ("NUX2sNnlr5e5", "A7NUX2sNn (neutral ref on refill)", "#a6761d")]
 CELLS6 = {"Happy-A", "Happy-B", "Sad-A", "Sad-B", "Angry-A", "Angry-B"}
 
 
