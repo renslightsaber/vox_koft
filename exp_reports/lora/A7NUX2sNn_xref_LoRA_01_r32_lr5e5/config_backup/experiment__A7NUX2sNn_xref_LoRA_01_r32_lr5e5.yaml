@@ -1,0 +1,34 @@
+# A7NUX2sNn_xref_LoRA_01_r32_lr5e5 — A7NUX2sN 과 같고, 추가 무감정 행 5,941개의 ref 만 **같은 화자 다른 무감정 녹음**으로 (2026-11-09 지시문 q3tts 세션 11/08 23:25 §5 · 사용자 승인)
+#   왜: A7NUX2sN 으로 542 화자 A칸 감정 약화의 원인이 542 행 자체로 결론(542 몫 +9.3%p). 모델이 542 행의 무엇을 단서로 삼았나
+#       (가) 542 화자 목소리 · 녹음 느낌 자체 (나) "무감정 ref → 무감정 정답" 행 모양 — sN 은 추가 행 ref 가 모두 감정 녹음이라 못 가름
+#   데이터: A7NUX2sNn(tools/make_a7nux2rs6.py --n542 0 --neu_fill_neutral) · 206,570행 · 무감정 10.69% = sN 과 같음 · 추가 행 ref 칸만 Neutrality
+#   설정: A7NUX2sN_xref_LoRA_01_r32_lr5e5 복제 — 데이터 경로(train · val_xref) · run_name · 이 주석만 다름(지시문 v1)
+#   해석: 542 A칸 e2v 9 step 평균 ≈41%(sN) → (가) · ≈32%(Rs6) → (나) · 사이 → 둘 다
+#   실행: ./scripts/run.sh train lora --exp configs/experiments/lora/A7NUX2sNn_xref_LoRA_01_r32_lr5e5.yaml --hw rtxpro6000_2gpu --accel 2gpu_b
+logging:
+  run_name: A7NUX2sNn_xref_LoRA_01_r32_lr5e5
+data:
+  train_jsonl: A7NUX2sNn/train.jsonl
+  val_jsonl: A7N/val.jsonl
+  val_unseen_jsonl: A7N/val_unseen8/val.jsonl
+  val_unseen_pool_jsonl: A7N/val_unseen8/ref_pool.jsonl
+  val_xref_jsonl: A7NUX2sNn/val_xref.jsonl   # 감정 ref 판 val(192) → TB val_xref/*
+  ref:
+    pool_jsonl: A7N/ref_pool.jsonl
+  batch_size: 8                     # hw yaml(8) 대신 — 방식마다 메모리가 달라 실험에 둠
+optim:
+  lr: 5.0e-5
+  warmup_steps: 200
+train:
+  max_steps: 4500
+  grad_accum: 2
+  eval_every: 500
+  save_every: 500
+  keep_last: 9
+  resume: {enable: true, every: 500, keep: 1}
+media:
+  every: 500
+lora:
+  enable: true
+  r: 32
+  alpha: 32

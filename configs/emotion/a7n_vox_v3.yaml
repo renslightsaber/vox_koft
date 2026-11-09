@@ -1,0 +1,15 @@
+# configs/emotion/a7n_vox_v3.yaml — v1 에서 **분노B(Angry-B) 한 줄만** 바꾼 표 (2026-11-08 · 지시문 q3tts 세션 23:25 · 사용자 승인)
+#
+# 왜: 11/08 시험 A(docs/reports/20261108_listen_pages_and_instr_test.md §3)
+#   - 추론 때 분노B 문구를 분노A 문구로 바꾸면 F0 −2.8반음 · 목표 유사도 0.567 → 0.633 → 모델은 아직 문구의 뜻을 읽는다.
+#   - 그런데 학습 문구 자체가 "shouting · loud" → 학습 문구를 바꾸면 분노B 소리침이 줄어드는지 본다.
+# v1 과 다른 점: Angry-B 한 줄뿐(나머지 6칸은 v1 과 글자까지 같음 · 한 가지만 다르게). 기쁨B 는 이미 약해서 그대로.
+# v1 · v2 파일은 고치지 않는다. 첫 run: A7NUX2sN_xref_LoRA_02_r32_lr5e5_iv3
+instruct:
+  Neutrality: "Calm, neutral tone, speaking plainly at a steady pace"
+  Happy-A: "Quietly happy, warm and content, a gentle smile in the voice"
+  Happy-B: "Very happy and excited, bright, cheerful and openly joyful"
+  Sad-A: "Quietly sad, subdued and low, holding back sorrow"
+  Sad-B: "Deeply sad and tearful, grieving, voice trembling with sorrow"
+  Angry-A: "Coldly irritated, restrained anger, firm and clipped"
+  Angry-B: "Strong anger, intense and forceful, firm voice without shouting"
