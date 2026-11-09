@@ -33,6 +33,7 @@ from voxko.common.console import c, fmt_metrics, fmt_seconds, logger, logging_re
 import itertools
 import math
 import os
+import json
 import shutil
 import time
 import traceback
@@ -600,6 +601,13 @@ class BaseTrainer:
                     wavs = self.synthesize(rows)
                 for i, (r, w) in enumerate(zip(rows, wavs)):
                     cap = f"{r['utt']} | {r.get('speaker')} | {r.get('emotion')} | {r['text']}"
+                    if "ref_utt" in r:                        # 2026-11-08: REF 를 캡션에 · REF 소리도 처음 한 번
+                        cap += (f" | REF {r['ref_utt']} ({r.get('ref_speaker')} · {r.get('ref_emotion')}) | {r.get('src')}"
+                                if r.get("ref") else " | REF 없음(목소리 비교 금지)")
+                    if not self._target_logged and r.get("ref"):
+                        rw = load_audio(r["ref"], SR_IN)
+                        safe(writer.add_audio, f"media/ref_audio_{i}", np.clip(rw, -1, 1), step, sample_rate=SR_IN)
+                        safe(writer.add_text, f"media/ref_caption_{i}", f"[REF] {r['ref_utt']} | {r.get('ref_speaker')} | {r.get('ref_emotion')}", step)
                     if not self._target_logged:
                         gt = load_audio(r["audio"], SR_IN)
                         safe(writer.add_audio, f"media/target_audio_{i}", np.clip(gt, -1, 1), step, sample_rate=SR_IN)
@@ -671,12 +679,17 @@ class BaseTrainer:
         if acc.is_main_process:
             out = self.run_dir / "_smoke"
             out.mkdir(parents=True, exist_ok=True)
-            rows = self.media_rows()[:1]
+            rows = self.media_rows()                     # 2026-11-08: media 문장 전부(REF 와 같은 목소리인지 smoke 에서 확인)
             if rows and self.mc.get("enable", True):
-                with preserved_rng(self.seed):
-                    w = self.synthesize(rows)[0]
-                sf.write(out / f"{rows[0]['utt']}.wav", w, SR_OUT)
-                logger.info(c(f"🎵 [smoke] 합성 1개 OK ({len(w) / SR_OUT:.2f}s) → {out}", "BLUE", "BRIGHT"))
+                with preserved_rng(int(self.mc.get("seed", self.seed))):
+                    ws = self.synthesize(rows)
+                for i, (r, w) in enumerate(zip(rows, ws)):
+                    sf.write(out / f"media{i}_{r['utt']}.wav", w, SR_OUT)
+                    if r.get("ref"):
+                        shutil.copy2(r["ref"], out / f"media{i}_REF_{r['ref_utt']}.wav")
+                (out / "media_rows.json").write_text(json.dumps(rows, ensure_ascii=False, indent=1))
+                logger.info(c(f"🎵 [smoke] media 합성 {len(ws)}개 OK ({' · '.join(f'{len(w) / SR_OUT:.2f}s' for w in ws)}) "
+                              f"· REF 있음 {sum(1 for r in rows if r.get('ref'))}/{len(rows)} → {out}", "BLUE", "BRIGHT"))
             tmp = out / "export_check"
             made = self.export(tmp)
             for fmt, path in made:

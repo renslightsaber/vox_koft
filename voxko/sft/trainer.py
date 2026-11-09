@@ -199,14 +199,46 @@ class VoxSFTTrainer(BaseTrainer):
 
     # ────────────────────────────── 합성(media · smoke)
     def media_rows(self) -> List[dict]:
+        """TB 미리듣기 문장 — REF 가 확실히 있는 행만(2026-11-08 고침).
+        예전: val 처음 2줄(466 화자) → ref 풀에 그 화자가 없어 REF 없이 합성 → pred 가 아무 목소리(성별까지 다름).
+        지금: val_xref 처음 num_samples 행(행에 고정 ref) + val_unseen 1행(풀 ref). val_xref 가 없으면 val 에서 풀 ref 가 있는 행.
+        그래도 없으면 경고하고 REF 없이 합성."""
         n = int(self.mc.get("num_samples", 2))
-        ds = self.ds_val
+        cached = getattr(self, "_media_rows_cache", None)
+        if cached is not None:
+            return cached
+
+        def row_of(ds, i, src):
+            r, p = ds.rows[i], ds.plan(i, 0)
+            ref = p["ref"]
+            if ref is None:                                   # 풀 ref 가 있는데 비율로 빠진 경우 → 첫 후보를 씀(결정적)
+                cands = ds._candidates(r)
+                ref = cands[0] if cands else None
+            return {"utt": r["utt"], "audio": r["audio"], "speaker": r.get("speaker"), "emotion": r.get("emotion"),
+                    "text": p["text"], "src": src,
+                    "ref": ref["audio"] if ref else None, "ref_utt": ref["utt"] if ref else None,
+                    "ref_speaker": (ref.get("speaker") or r.get("speaker")) if ref else None,
+                    "ref_emotion": r.get("ref_emotion") if r.get("ref_audio") else ("Neutrality" if ref else None)}
+
         rows = []
-        for i in range(min(n, len(ds))):
-            p = ds.plan(i, 0)
-            r = ds.rows[i]
-            rows.append({"utt": r["utt"], "audio": r["audio"], "speaker": r.get("speaker"), "emotion": r.get("emotion"),
-                         "text": p["text"], "ref": p["ref"]["audio"] if p["ref"] else None})
+        xref = getattr(self, "ds_val_extra", {}).get("val_xref")
+        if xref is not None and len(xref):
+            rows += [row_of(xref, i, "val_xref") for i in range(min(n, len(xref)))]
+        else:
+            ok = [i for i in range(len(self.ds_val)) if self.ds_val._candidates(self.ds_val.rows[i])]
+            rows += [row_of(self.ds_val, i, "val") for i in ok[:n]]
+        un = getattr(self, "ds_val_unseen", None)
+        if un is not None:
+            ok = [i for i in range(len(un)) if un._candidates(un.rows[i])]
+            if ok:
+                rows.append(row_of(un, ok[0], "val_unseen"))
+        if not rows:                                          # 마지막 수단 — 예전 동작(REF 없음)
+            for i in range(min(n, len(self.ds_val))):
+                rows.append({**row_of(self.ds_val, i, "val"), "ref": None, "ref_utt": None, "ref_speaker": None, "ref_emotion": None})
+        if any(r["ref"] is None for r in rows) and self.acc.is_main_process:
+            logger.warning("⚠️ [media] REF 없는 미리듣기 문장이 있습니다 — 그 pred 소리는 목소리 비교에 쓰지 마세요: "
+                           + ", ".join(r["utt"] for r in rows if r["ref"] is None))
+        self._media_rows_cache = rows
         return rows
 
     @torch.no_grad()
