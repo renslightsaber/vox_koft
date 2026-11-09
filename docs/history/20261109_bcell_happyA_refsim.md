@@ -1,7 +1,7 @@
 # 2026-11-09 낮 — 정리 · 커밋 · B칸 고르기 판 · 기쁨A 조사 · REF 유사도 조사
 
 > 📅 2026-11-09 (월) 09:30 ~ 11:53 · 처음 보는 사람용 · 날짜별 요약 기록(자세한 것은 링크) · 시각은 KST(서버 UTC + 9)
-> 앞: [20261109_overnight_iv3_sNn_cross_model.md](20261109_overnight_iv3_sNn_cross_model.md)
+> 앞: [20261109_overnight_iv3_sNn_cross_model.md](20261109_overnight_iv3_sNn_cross_model.md) · 다음: [20261109_pilot_bestofn_workshop.md](20261109_pilot_bestofn_workshop.md)
 > ⚠️ 숫자는 모두 **참고용**(자동 잣대)입니다. 품질 판정은 사용자 청음이 정본입니다.
 
 ---
