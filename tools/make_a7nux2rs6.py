@@ -10,6 +10,13 @@ A7NUX2s   = 위와 같고 **542 = 0**(`--n542 0`)
     ~/miniforge3/envs/q3tts/bin/python tools/make_a7nux2rs6.py --n542 6     # → A7NUX2Rs6
     ~/miniforge3/envs/q3tts/bin/python tools/make_a7nux2rs6.py --n542 0     # → A7NUX2s
     ~/miniforge3/envs/q3tts/bin/python tools/make_a7nux2rs6.py --n542 0 --neu_fill   # → A7NUX2sN(11/07 21:4x 추가)
+    ~/miniforge3/envs/q3tts/bin/python tools/make_a7nux2rs6.py --n542 0 --neu_fill_neutral   # → A7NUX2sNn(11/09 00시 추가 · vox 세션)
+A7NUX2sNn = A7NUX2sN 과 같은 무감정 정답(5,941개 · neufill 표본)에 두 번째 행을 붙이되, 그 ref 를 **같은 화자의 다른 무감정 녹음**으로
+    (A7N/ref_pool · A7N · A7NU 무감정 · 2~10초 · 음질 bad 제외 · seed "{SEED}|neufill_neu|utt"). 그 화자에게 다른 무감정 녹음이 없으면
+    같은 규칙("{SEED}|neufill_neu_repl")으로 다른 무감정 정답을 대신 뽑음(수는 dataset_info 에).
+왜(지시문 q3tts 세션 11/08 23:25 §5): A7NUX2sN 의 추가 행은 ref 가 모두 감정 녹음이라, 542 지름길의 단서가 (가) 542 화자 자체인지
+    (나) "무감정 ref → 무감정 정답" 행 모양인지 못 가름 → 다른 점을 "추가 행 ref 가 감정(sN) / 무감정(sNn)" 하나로.
+    추가 행 표시: ref_rule = "neufill_neu"(같은 칸 ref 검사에서 이 행만 뺌).
 A7NUX2sN = A7NUX2s 와 같고, 무감정 정답 일부(5,941개 = A7NUX2Rs6 의 542 행 수)에 **같은 규칙으로 ref 를 하나 더**(두 번째 ref).
 왜: A7NUX2s 는 542 를 빼면서 무감정 비율도 10.7 → 8.05% 로 줄어 "542 지름길" vs "무감정 비율" 을 못 가름.
     A7NUX2sN 은 행 수 · 무감정 비율이 A7NUX2Rs6 과 같고 "그 무감정 행이 542 화자인지(Rs6) 아닌지(sN)" 만 다름.
@@ -70,9 +77,13 @@ def main():
     global N542, NAME
     ap = argparse.ArgumentParser(); ap.add_argument("--n542", type=int, choices=[6, 0], required=True)
     ap.add_argument("--neu_fill", action="store_true", help="542 대신 무감정 정답에 두 번째 ref(A7NUX2sN)")
+    ap.add_argument("--neu_fill_neutral", action="store_true", help="--neu_fill 과 같은 정답 · 두 번째 ref 는 같은 화자 무감정 녹음(A7NUX2sNn)")
     a = ap.parse_args(); N542 = a.n542
+    nn = a.neu_fill_neutral
+    assert not (a.neu_fill and nn), "--neu_fill 과 --neu_fill_neutral 은 하나만"
+    a.neu_fill = a.neu_fill or nn
     assert not (a.neu_fill and N542), "--neu_fill 은 --n542 0 과 함께"
-    NAME = "A7NUX2sN" if a.neu_fill else ("A7NUX2Rs6" if N542 else "A7NUX2s")
+    NAME = ("A7NUX2sNn" if nn else "A7NUX2sN") if a.neu_fill else ("A7NUX2Rs6" if N542 else "A7NUX2s")
     nu = jl(V / "A7NU/rows.jsonl")
     nu_t = [r for r in nu if r["role"] == "target"]
     bad_a7n = bad_set(["a7n_train.csv", "ref_neutral466.csv"], ["bad_snr", "bad_hf"])
@@ -115,6 +126,15 @@ def main():
         elig = sorted(r["utt"] for r in tr + nu_t if r["emotion"] == "Neutrality" and r["speaker"] in keep_spk and r["utt"] not in bad_a7n
                       and len([c for c in cand[r["speaker"]] if c["emotion"] != r["emotion"] and c["utt"] != r["utt"]]) >= 2)
         fill = set(random.Random(f"{SEED}|neufill").sample(elig, n_fill))
+    neu_c = lambda r: [c for c in cand[r["speaker"]] if c["emotion"] == "Neutrality" and c["utt"] != r["utt"]]   # noqa: E731
+    n_repl = 0
+    if nn:                                  # (A7NUX2sNn) 다른 무감정 녹음이 없는 정답은 바꿈
+        row_of = {r["utt"]: r for r in tr + nu_t}
+        lack = sorted(u for u in fill if not neu_c(row_of[u]))
+        if lack:
+            pool_nn = sorted(u for u in elig if u not in fill and neu_c(row_of[u]))
+            repl = random.Random(f"{SEED}|neufill_neu_repl").sample(pool_nn, len(lack))
+            fill = (fill - set(lack)) | set(repl); n_repl = len(lack)
     rows, n_bad_tgt = [], 0
     for r in tr + nu_t:
         if r["speaker"] not in keep_spk:
@@ -122,9 +142,15 @@ def main():
         if r["utt"] in bad_a7n:
             n_bad_tgt += 1; continue
         cs = [c for c in cand[r["speaker"]] if c["emotion"] != r["emotion"] and c["utt"] != r["utt"]]
-        for j, c in enumerate(pick(r, (2 if r["utt"] in fill else K_NEU) if r["emotion"] == "Neutrality" else K, "train2", cs)):
+        if nn and r["utt"] in fill:          # 첫 ref = A7NUX2s 와 같음(같은 rng) · 두 번째 = 같은 화자 다른 무감정 녹음
+            ns = sorted(neu_c(r), key=lambda c: c["utt"])
+            sel = pick(r, K_NEU, "train2", cs) + [ns[random.Random(f"{SEED}|neufill_neu|{r['utt']}").randrange(len(ns))]]
+        else:
+            sel = pick(r, (2 if r["utt"] in fill else K_NEU) if r["emotion"] == "Neutrality" else K, "train2", cs)
+        for j, c in enumerate(sel):
             rows.append(dict(r, src="A7NU" if "role" in r else "A7N", utt_x=f"{r['utt']}__x{j}", ref_utt=c["utt"], ref_audio=c["audio"], ref_audio24=c["audio24"],
-                             ref_emotion=c["emotion"], ref_kind=kind(c["emotion"]), ref_duration=c["duration"]))
+                             ref_emotion=c["emotion"], ref_kind=kind(c["emotion"]), ref_duration=c["duration"],
+                             **({"ref_rule": "neufill_neu"} if (nn and r["utt"] in fill and j == 1) else {})))
     # ---- 542 쪽 ----
     s542 = jl(V / "542/train.jsonl"); ref542 = jl(V / "542/ref_pool.jsonl")
     unseen = {json.loads(l)["speaker"] for f in (V / "542/val_unseen542").glob("*.jsonl") for l in open(f) if l.strip()} \
@@ -158,7 +184,7 @@ def main():
             took += 1; n542_tgt += 1
         short_spk += took < N542
     # ---- 검증 ----
-    chk = dict(same_cell_ref=sum(r["ref_emotion"] == r["emotion"] and r["src"] != "542" for r in rows),
+    chk = dict(same_cell_ref=sum(r["ref_emotion"] == r["emotion"] and r["src"] != "542" and r.get("ref_rule") != "neufill_neu" for r in rows),
                self_ref=sum(r["ref_utt"] == r["utt"] for r in rows),
                bad_target=sum(r["utt"] in (bad_a7n if r["src"] == "A7N" else bad_542) for r in rows),
                bad_ref=sum(r["ref_utt"] in (bad_a7n if r["src"] == "A7N" else bad_542) for r in rows),
@@ -174,7 +200,7 @@ def main():
     emo = collections.Counter(r["emotion"] for r in rows)
     emo_of = {r["utt"]: r["emotion"] for r in rows}
     info = dict(name=NAME, created_kst=time.strftime("%Y-%m-%d %H:%M", time.gmtime(time.time() + 9 * 3600)),
-                why=("A7NX2Rs6 + A7NU 5목소리" if N542 else ("A7NUX2s + 무감정 정답 5,941개에 두 번째 ref(행 수 · 무감정 비율 = A7NUX2Rs6 · 사용자 11/07 21:36)" if a.neu_fill else "A7NUX2Rs6 에서 542 = 0")) + " (사용자 11/07 18:38): 542 를 줄여도 542 A칸 감정이 안 돌아옴 → 542 있음/없음과 ref 개수를 가름 · 감정 화자 +5",
+                why=("A7NX2Rs6 + A7NU 5목소리" if N542 else (("A7NUX2sN 과 같은 무감정 정답에 두 번째 행 · 그 ref 는 같은 화자 다른 무감정 녹음(지시문 q3tts 세션 11/08 23:25 §5 · 542 지름길의 단서 가르기) · 바탕: " if nn else "") + "A7NUX2s + 무감정 정답 5,941개에 두 번째 ref(행 수 · 무감정 비율 = A7NUX2Rs6 · 사용자 11/07 21:36)" if a.neu_fill else "A7NUX2Rs6 에서 542 = 0")) + " (사용자 11/07 18:38): 542 를 줄여도 542 A칸 감정이 안 돌아옴 → 542 있음/없음과 ref 개수를 가름 · 감정 화자 +5",
                 rule=dict(a7n="make_a7nx.py 규칙 · 정답 · ref 음질 bad_snr|bad_hf 제외", refs_per_target=dict(emotion=K, neutral=K_NEU), weights=W,
                           s542=f"bad_any 없는 녹음 · 화자마다 {N542}개 · 2~{MAX542}초 · ref = 같은 화자 다른 문장 {K_NEU}개 · Neutrality 지시문",
                           val_xref="A7NX/val_xref.jsonl 그대로(192)", seed=SEED),
@@ -190,7 +216,9 @@ def main():
                             share_neutral=round(emo["Neutrality"] / len(rows), 4), target_emotion=dict(emo),
                             ref_kind=dict(collections.Counter(r["ref_kind"] for r in rows)),
                             targets_with_fewer_refs=sum(1 for u, n in collections.Counter(r["utt"] for r in rows).items() if n < ((2 if u in fill else K_NEU) if emo_of[u] == "Neutrality" else K)),
-                            neu_fill_targets=len(fill)),
+                            neu_fill_targets=len(fill), neu_fill_replaced=n_repl,
+                            neu_fill_neutral_ref_rows=sum(r.get("ref_rule") == "neufill_neu" for r in rows),
+                            ref_audio24_missing=sum(not r.get("ref_audio24") for r in rows)),
                 checks=chk, code=str(Path(__file__).resolve()))
     assert all(v == 0 for v in chk.values()), chk
     for root in (V, Q):
